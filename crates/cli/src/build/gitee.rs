@@ -12,13 +12,13 @@ use landscape2_core::data::{Commit, Contributors, GithubData, Release, Repositor
 use lazy_static::lazy_static;
 #[cfg(test)]
 use mockall::automock;
-use octorust::auth::Credentials;
-use octorust::types::{FullRepository, ParticipationStats};
+use octorust::types::ParticipationStats;
 use regex::Regex;
 use reqwest::header::{self, HeaderMap, HeaderValue};
 use std::collections::BTreeMap;
 use std::env;
 use tracing::{debug, instrument, warn};
+use serde::{Serialize, Deserialize};
 
 type GiteeData = GithubData;
 type RepositoryGiteeData = RepositoryGithubData;
@@ -155,13 +155,14 @@ async fn collect_repository_data(gt: Object<DynGT>, repo_url: &str) -> Result<Re
         languages,
         latest_commit,
         latest_release,
-        license: gt_repo.license.and_then(|l| {
-            if l.name == "NOASSERTION" {
-                None
-            } else {
-                Some(l.name)
-            }
-        }),
+        // license: gt_repo.license.and_then(|l| {
+        //     if l.name == "NOASSERTION" {
+        //         None
+        //     } else {
+        //         Some(l.name)
+        //     }
+        // }),
+        license: Some("TODO".to_string()),
         participation_stats,
         stars: gt_repo.stargazers_count,
         topics: gt_repo.topics,
@@ -170,7 +171,7 @@ async fn collect_repository_data(gt: Object<DynGT>, repo_url: &str) -> Result<Re
 }
 
 /// Gitee API base url.
-const GITEE_API_URL: &str = "https://api.gitee.com";
+const GITEE_API_URL: &str = "https://gitee.com/api/v5/";
 
 /// Type alias to represent a GT trait object.
 type DynGT = Box<dyn GT + Send + Sync>;
@@ -198,13 +199,48 @@ trait GT {
     async fn get_participation_stats(&self, owner: &str, repo: &str) -> Result<ParticipationStats>;
 
     /// Get repository.
-    async fn get_repository(&self, owner: &str, repo: &str) -> Result<FullRepository>;
+    async fn get_repository(&self, owner: &str, repo: &str) -> Result<PartRepository>;
 }
 
 /// GT implementation backed by the Gitee API.
 struct GTApi {
-    gt_client: octorust::Client,
     http_client: reqwest::Client,
+}
+
+// #[derive(Serialize, Deserialize)]
+struct PartRepository {
+    // #[serde(
+    //     default,
+    //     skip_serializing_if = "String::is_empty",
+    //     deserialize_with = "crate::utils::deserialize_null_string::deserialize"
+    // )]
+    pub default_branch: String,
+    // #[serde(
+    //     default,
+    //     skip_serializing_if = "String::is_empty",
+    //     deserialize_with = "crate::utils::deserialize_null_string::deserialize"
+    // )]
+    pub description: String,
+    // #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub license: Option<Vec<String>>,
+    // #[serde(
+    //     default,
+    //     skip_serializing_if = "crate::utils::zero_i64",
+    //     deserialize_with = "crate::utils::deserialize_null_i64::deserialize"
+    // )]
+    pub stargazers_count: i64,
+    // #[serde(
+    //     default,
+    //     skip_serializing_if = "Vec::is_empty",
+    //     deserialize_with = "crate::utils::deserialize_null_vector::deserialize"
+    // )]
+    pub topics: Vec<String>,
+    // #[serde(
+    //     default,
+    //     skip_serializing_if = "String::is_empty",
+    //     deserialize_with = "crate::utils::deserialize_null_string::deserialize"
+    // )]
+    pub html_url: String
 }
 
 impl GTApi {
@@ -212,32 +248,18 @@ impl GTApi {
     fn new(token: &str) -> Result<Self> {
         // Setup octorust Gitee API client
         let user_agent = format!("{}/{}", env!("CARGO_PKG_NAME"), env!("CARGO_PKG_VERSION"));
-        let gt_client = octorust::Client::custom(
-            user_agent.clone(),
-            Credentials::Token(token.to_string()),
-            reqwest_middleware::ClientBuilder::new(reqwest_octorust::Client::builder().build()?).build(),
-        );
 
         // Setup HTTP client ready to make requests to the Gitee API
         // (for some operations that cannot be done with the octorust client)
         let mut headers = HeaderMap::new();
         headers.insert(
-            header::ACCEPT,
-            HeaderValue::from_str("application/vnd.gitee+json").unwrap(),
-        );
-        headers.insert(
             header::AUTHORIZATION,
             HeaderValue::from_str(&format!("Bearer {token}")).unwrap(),
-        );
-        headers.insert(
-            "X-Gitee-Api-Version",
-            HeaderValue::from_str("2022-11-28").unwrap(),
         );
         let http_client =
             reqwest::Client::builder().user_agent(user_agent).default_headers(headers).build()?;
 
         Ok(Self {
-            gt_client,
             http_client,
         })
     }
@@ -248,7 +270,7 @@ impl GT for GTApi {
     /// [GT::get_contributors_count]
     #[instrument(skip(self), err)]
     async fn get_contributors_count(&self, owner: &str, repo: &str) -> Result<usize> {
-        let url = format!("{GITEE_API_URL}/repos/{owner}/{repo}/contributors?per_page=1&anon=true");
+        let url = format!("{GITEE_API_URL}/repos/{owner}/{repo}/contributors?type=committers");
         let response = self.http_client.head(url).send().await?;
         let count = get_last_page(response.headers())?.unwrap_or(1);
         Ok(count)
@@ -264,16 +286,16 @@ impl GT for GTApi {
         let last_page = get_last_page(response.headers())?.unwrap_or(1);
 
         // Get first repository commit and return it if found
-        if let Some(commit) = self
-            .gt_client
-            .repos()
-            .list_commits(owner, repo, ref_, "", "", None, None, 1, last_page as i64)
-            .await?
-            .body
-            .pop()
-        {
-            return Ok(Some(new_commit_from(commit)));
-        }
+        // if let Some(commit) = self
+        //     .gt_client
+        //     .repos()
+        //     .list_commits(owner, repo, ref_, "", "", None, None, 1, last_page as i64)
+        //     .await?
+        //     .body
+        //     .pop()
+        // {
+        //     return Ok(Some(new_commit_from(commit)));
+        // }
         Ok(None)
     }
 
@@ -288,36 +310,42 @@ impl GT for GTApi {
     /// [GT::get_latest_commit]
     #[instrument(skip(self), err)]
     async fn get_latest_commit(&self, owner: &str, repo: &str, ref_: &str) -> Result<Commit> {
-        let response = self.gt_client.repos().get_commit(owner, repo, 1, 1, ref_).await?;
-        Ok(new_commit_from(response.body))
+        // let response = self.gt_client.repos().get_commit(owner, repo, 1, 1, ref_).await?;
+        Ok(Commit {
+            ts: None,
+            url: String::from("https://example.com"),
+        })
     }
 
     /// [GT::get_latest_release]
     #[instrument(skip(self), err)]
     async fn get_latest_release(&self, owner: &str, repo: &str) -> Result<Option<Release>> {
-        match self.gt_client.repos().get_latest_release(owner, repo).await {
-            Ok(response) => Ok(Some(new_release_from(response.body))),
-            Err(err) => {
-                if err.to_string().to_lowercase().contains("not found") {
-                    return Ok(None);
-                }
-                Err(err.into())
-            }
-        }
+        Ok(Some(Release{
+            ts: None,
+            url: String::new(),
+        }))
     }
 
     /// [GT::get_participation_stats]
     #[instrument(skip(self), err)]
     async fn get_participation_stats(&self, owner: &str, repo: &str) -> Result<ParticipationStats> {
-        let response = self.gt_client.repos().get_participation_stats(owner, repo).await?;
-        Ok(response.body)
+        Ok(ParticipationStats{all: vec![], owner: vec![]})
     }
 
     /// [GT::get_repository]
     #[instrument(skip(self), err)]
-    async fn get_repository(&self, owner: &str, repo: &str) -> Result<FullRepository> {
-        let response = self.gt_client.repos().get(owner, repo).await?;
-        Ok(response.body)
+    async fn get_repository(&self, owner: &str, repo: &str) -> Result<PartRepository> {
+        let url = format!("{GITEE_API_URL}/repos/{owner}/{repo}");
+        let response = self.http_client.head(url).send().await?;
+        println!("{:?}", response);
+        Ok(PartRepository {
+            default_branch: String::default(),
+            description: String::default(),
+            license: None,
+            stargazers_count: i64::default(),
+            topics: Vec::default(),
+            html_url: String::default(),
+        })
     }
 }
 

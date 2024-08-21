@@ -5,6 +5,7 @@ use self::{
     crunchbase::collect_crunchbase_data,
     export::generate_items_csv,
     github::collect_github_data,
+    gitee::collect_gitee_data,
     logos::{prepare_logo, LogosSource},
     projects::{generate_projects_csv, ProjectsMd},
 };
@@ -55,6 +56,7 @@ mod clomonitor;
 mod crunchbase;
 mod export;
 mod github;
+mod gitee;
 mod logos;
 mod projects;
 
@@ -175,9 +177,10 @@ pub async fn build(args: &BuildArgs) -> Result<()> {
     prepare_settings_images(&mut settings, &args.output_dir).await?;
 
     // Collect data from external services
-    let (crunchbase_data, github_data) = tokio::try_join!(
+    let (crunchbase_data, github_data, gitee_data) = tokio::try_join!(
         collect_crunchbase_data(&cache, &landscape_data),
-        collect_github_data(&cache, &landscape_data)
+        collect_github_data(&cache, &landscape_data),
+        collect_gitee_data(&cache, &landscape_data)
     )?;
 
     // Enrich landscape data with some extra information from the settings and
@@ -185,6 +188,7 @@ pub async fn build(args: &BuildArgs) -> Result<()> {
     landscape_data.add_crunchbase_data(&crunchbase_data);
     landscape_data.add_featured_items_data(&settings);
     landscape_data.add_github_data(&github_data);
+    landscape_data.add_github_data(&gitee_data);
     landscape_data.add_member_subcategory(&settings.members_category);
     landscape_data.add_tags(&settings);
     landscape_data.set_enduser_flag(&settings);
