@@ -19,6 +19,7 @@ use std::collections::BTreeMap;
 use std::env;
 use tracing::{debug, instrument, warn};
 use serde::{Serialize, Deserialize};
+use serde_json::Value;
 
 type GiteeData = GithubData;
 type RepositoryGiteeData = RepositoryGithubData;
@@ -208,6 +209,7 @@ struct GTApi {
 }
 
 // #[derive(Serialize, Deserialize)]
+#[derive(Debug)]
 struct PartRepository {
     // #[serde(
     //     default,
@@ -252,6 +254,10 @@ impl GTApi {
         // Setup HTTP client ready to make requests to the Gitee API
         // (for some operations that cannot be done with the octorust client)
         let mut headers = HeaderMap::new();
+        headers.insert(
+            header::ACCEPT,
+            HeaderValue::from_str("application/json").unwrap(),
+        );
         headers.insert(
             header::AUTHORIZATION,
             HeaderValue::from_str(&format!("Bearer {token}")).unwrap(),
@@ -336,16 +342,26 @@ impl GT for GTApi {
     #[instrument(skip(self), err)]
     async fn get_repository(&self, owner: &str, repo: &str) -> Result<PartRepository> {
         let url = format!("{GITEE_API_URL}/repos/{owner}/{repo}");
-        let response = self.http_client.head(url).send().await?;
-        println!("{:?}", response);
-        Ok(PartRepository {
-            default_branch: String::default(),
-            description: String::default(),
-            license: None,
-            stargazers_count: i64::default(),
-            topics: Vec::default(),
-            html_url: String::default(),
-        })
+        let response = self.http_client.get(url).send().await?;
+
+        if !response.status().is_success() {
+            return Err(format_err!("get_repository failed!"));
+        }
+
+        let body_text: String = response.text().await?;
+        let body_json: Value = serde_json::from_str(&body_text)?;
+
+        let mut repo = PartRepository {
+            default_branch: body_json.get("default_branch").map(Value::to_string).unwrap_or_default(),
+            description: body_json.get("description").map(Value::to_string).unwrap_or_default(),
+            license: body_json.get("license").map(|val| vec![val.to_string()]),
+            stargazers_count: body_json.get("stargazers_count").and_then(Value::as_i64).unwrap_or_default(),
+            topics: body_json.get("topics").map(|val| vec![val.to_string()]).unwrap_or_default(),
+            html_url: body_json.get("html_url").map(Value::to_string).unwrap_or_default(),
+        };
+
+        println!("Parsed JSON body: {:?}", repo);
+        Ok(repo)
     }
 }
 
