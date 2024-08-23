@@ -5,7 +5,7 @@
 use super::{cache::Cache, LandscapeData};
 use anyhow::{format_err, Result};
 use async_trait::async_trait;
-use chrono::{DateTime, Utc};
+use chrono::{DateTime, Utc, Duration};
 use deadpool::unmanaged::{Object, Pool};
 use futures::stream::{self, StreamExt};
 use landscape2_core::data::{Commit, Contributors, GithubData, Release, RepositoryGithubData};
@@ -276,10 +276,18 @@ impl GT for GTApi {
     /// [GT::get_contributors_count]
     #[instrument(skip(self), err)]
     async fn get_contributors_count(&self, owner: &str, repo: &str) -> Result<usize> {
-        let url = format!("{GITEE_API_URL}/repos/{owner}/{repo}/contributors?type=committers");
-        let response = self.http_client.head(url).send().await?;
-        let count = get_last_page(response.headers())?.unwrap_or(1);
-        Ok(count)
+        let url = format!("{GITEE_API_URL}/repos/{owner}/{repo}/contributors?type=authors");
+        let response = self.http_client.get(url).send().await?;
+
+        if !response.status().is_success() {
+            return Err(format_err!("get_contributors_count failed!"));
+        }
+
+        let body_text: String = response.text().await?;
+        let body_json: Value = serde_json::from_str(&body_text)?;
+        let length = body_json.as_array().map_or(0, |arr| arr.len());
+        println!("get_contributors_count success");
+        Ok(length)
     }
 
     /// [GT::get_first_commit]
@@ -287,55 +295,115 @@ impl GT for GTApi {
     #[instrument(skip(self), err)]
     async fn get_first_commit(&self, owner: &str, repo: &str, ref_: &str) -> Result<Option<Commit>> {
         // Get last commits page
-        let url = format!("{GITEE_API_URL}/repos/{owner}/{repo}/commits?sha={ref_}&per_page=1");
-        let response = self.http_client.head(url).send().await?;
-        let last_page = get_last_page(response.headers())?.unwrap_or(1);
+        let url = format!("{GITEE_API_URL}/repos/{owner}/{repo}/commits?sha={ref_}&per_page=1&page=1");
+        let head_response = self.http_client.head(url).send().await?;
+        let last_page = get_last_page(head_response.headers())?.unwrap_or(1);
 
-        // Get first repository commit and return it if found
-        // if let Some(commit) = self
-        //     .gt_client
-        //     .repos()
-        //     .list_commits(owner, repo, ref_, "", "", None, None, 1, last_page as i64)
-        //     .await?
-        //     .body
-        //     .pop()
-        // {
-        //     return Ok(Some(new_commit_from(commit)));
-        // }
+        let last_page_url = format!("{GITEE_API_URL}/repos/{owner}/{repo}/commits?sha={ref_}&per_page=1&page={last_page}");
+        let response = self.http_client.get(last_page_url).send().await?;
+        if !response.status().is_success() {
+            return Err(format_err!("get_first_commit failed!"));
+        }
+
+        let body_text: String = response.text().await?;
+        let body_json: Value = serde_json::from_str(&body_text)?;
+
+        if let Some(commit) = body_json.as_array().and_then(|arr| arr.get(0)) {
+            println!("get_first_commit success");
+            return Ok(Some(new_commit_from(commit)));
+        }
         Ok(None)
     }
 
     /// [GT::get_languages]
     #[instrument(skip(self), err)]
     async fn get_languages(&self, owner: &str, repo: &str) -> Result<Option<BTreeMap<String, i64>>> {
-        let url = format!("{GITEE_API_URL}/repos/{owner}/{repo}/languages");
-        let languages: BTreeMap<String, i64> = self.http_client.get(url).send().await?.json().await?;
-        Ok(Some(languages))
+        // let url = format!("{GITEE_API_URL}/repos/{owner}/{repo}/languages");
+        // let languages: BTreeMap<String, i64> = self.http_client.get(url).send().await?.json().await?;
+        // Ok(Some(languages))
+        Ok(None)
     }
 
     /// [GT::get_latest_commit]
     #[instrument(skip(self), err)]
     async fn get_latest_commit(&self, owner: &str, repo: &str, ref_: &str) -> Result<Commit> {
-        // let response = self.gt_client.repos().get_commit(owner, repo, 1, 1, ref_).await?;
-        Ok(Commit {
-            ts: None,
-            url: String::from("https://example.com"),
-        })
+        let url = format!("{GITEE_API_URL}/repos/{owner}/{repo}/commits?sha={ref_}&per_page=1&page=1");
+        let response = self.http_client.get(url).send().await?;
+
+        if !response.status().is_success() {
+            return Err(format_err!("get_first_commit failed!"));
+        }
+
+        let body_text: String = response.text().await?;
+        let body_json: Value = serde_json::from_str(&body_text)?;
+
+        if let Some(commit) = body_json.as_array().and_then(|arr| arr.get(0)) {
+            println!("get_latest_commit success");
+            return Ok(new_commit_from(commit));
+        }
+        Ok(Commit::default())
     }
 
     /// [GT::get_latest_release]
     #[instrument(skip(self), err)]
     async fn get_latest_release(&self, owner: &str, repo: &str) -> Result<Option<Release>> {
-        Ok(Some(Release{
-            ts: None,
-            url: String::new(),
-        }))
+        let url = format!("{GITEE_API_URL}/repos/{owner}/{repo}/releases?per_page=1&page=1&direction=desc");
+        let response = self.http_client.get(url).send().await?;
+
+        if !response.status().is_success() {
+            return Err(format_err!("get_latest_release failed!"));
+        }
+
+        let body_text: String = response.text().await?;
+        let body_json: Value = serde_json::from_str(&body_text)?;
+
+        if let Some(release) = body_json.as_array().and_then(|arr| arr.get(0)) {
+            println!("get_latest_release success");
+            return Ok(Some(new_release_from(release)));
+        }
+        Ok(None)
     }
 
     /// [GT::get_participation_stats]
     #[instrument(skip(self), err)]
     async fn get_participation_stats(&self, owner: &str, repo: &str) -> Result<ParticipationStats> {
-        Ok(ParticipationStats{all: vec![], owner: vec![]})
+        let begin_date = Utc::now() - Duration::days(365);
+        let mut page = 1;
+        let mut week_commit_count: [i64; 52] = [0; 52];
+        loop {
+            let url = format!("{GITEE_API_URL}/repos/{owner}/{repo}/commits?per_page=100&page={page}&since={begin_date}");
+            let response = self.http_client.get(url).send().await?;
+
+            if !response.status().is_success() {
+                return Err(format_err!("get_first_commit failed!"));
+            }
+
+            let body_text: String = response.text().await?;
+            let body_json: Value = serde_json::from_str(&body_text)?;
+            if (body_json.as_array().map_or(0, |arr| arr.len()) ) == 0 {
+                break;
+            }
+            if let Some(array) = body_json.as_array() {
+                for commit in array {
+                    if let Some(commit_date_str) = commit["commit"]["author"]["date"].as_str() {
+                        if let Ok(commit_date) = DateTime::parse_from_rfc3339(commit_date_str) {
+                            let created_at = commit_date.with_timezone(&Utc);
+                            let week_index = (created_at - begin_date).num_days() as usize / 7;
+                            if week_index < 52 {
+                                week_commit_count[week_index] += 1;
+                            }
+                        } else {
+                            println!("Error parsing date: {}", commit_date_str);
+                        }
+                    } else {
+                        println!("Date field not found in commit data");
+                    }
+                }
+            }
+            page += 1
+        }
+        println!("get_participation_stats success");
+        Ok(ParticipationStats{all: week_commit_count.to_vec(), owner: vec![]})
     }
 
     /// [GT::get_repository]
@@ -352,7 +420,7 @@ impl GT for GTApi {
         let body_json: Value = serde_json::from_str(&body_text)?;
 
         let mut repo = PartRepository {
-            default_branch: body_json.get("default_branch").map(Value::to_string).unwrap_or_default(),
+            default_branch: body_json.get("default_branch").and_then(Value::as_str).map(|s| s.to_owned()).unwrap_or_default(),
             description: body_json.get("description").map(Value::to_string).unwrap_or_default(),
             license: body_json.get("license").map(|val| vec![val.to_string()]),
             stargazers_count: body_json.get("stargazers_count").and_then(Value::as_i64).unwrap_or_default(),
@@ -360,7 +428,8 @@ impl GT for GTApi {
             html_url: body_json.get("html_url").map(Value::to_string).unwrap_or_default(),
         };
 
-        println!("Parsed JSON body: {:?}", repo);
+        // println!("Parsed JSON body: {:?}", repo);
+        println!("get_repository success");
         Ok(repo)
     }
 }
@@ -374,12 +443,11 @@ lazy_static! {
 
 /// Return the last page of results available from the headers provided.
 fn get_last_page(headers: &HeaderMap) -> Result<Option<usize>> {
-    if let Some(link_header) = headers.get("link") {
-        let rels = parse_link_header::parse_with_rel(link_header.to_str()?)?;
-        if let Some(last_page_url) = rels.get("last") {
-            if let Some(last_page) = last_page_url.queries.get("page") {
-                return Ok(Some(last_page.parse()?));
-            }
+    if let Some(total_count) = headers.get("total_count") {
+        if let Ok(count) = total_count.to_str().map(str::parse::<usize>) {
+            return Ok(Some(count?));
+        } else {
+            return Err(format_err!("Failed to parse total count"));
         }
     }
     Ok(None)
@@ -392,21 +460,34 @@ fn get_owner_and_repo(repo_url: &str) -> Result<(String, String)> {
 }
 
 /// Create a new commit instance from the octorust commit data provided.
-fn new_commit_from(value: octorust::types::CommitDataType) -> Commit {
-    let mut commit = Commit {
-        url: value.html_url,
-        ts: None,
-    };
-    if let Some(author) = value.commit.author {
-        commit.ts = Some(DateTime::parse_from_rfc3339(&author.date).expect("date to be valid").into());
+fn new_commit_from(value: &Value) -> Commit {
+    let commit_url = value["html_url"].as_str().unwrap_or("");
+    let ts = value["commit"]["author"]["date"].as_str()
+        .and_then(|date| DateTime::parse_from_rfc3339(date).ok())
+        .map(|dt| dt.into());
+
+    Commit {
+        url: commit_url.to_string(),
+        ts,
     }
-    commit
 }
 
 /// Create a new release instance from the octorust release data provided.
-fn new_release_from(value: octorust::types::Release) -> Release {
+fn new_release_from(value: &Value) -> Release {
+    let tag_name = value["tag_name"].as_str().unwrap_or("");
+    let browser_download_url = value["assets"][0]["browser_download_url"].as_str().unwrap_or("");
+    let url = if let Some(repo_url) = browser_download_url.split("archive").next() {
+        format!("{repo_url}releases/tag/{tag_name}")
+    } else {
+        "".to_string()
+    };
+
+    let ts = value["created_at"].as_str()
+        .and_then(|date| DateTime::parse_from_rfc3339(date).ok())
+        .map(|dt| dt.into());
+
     Release {
-        ts: value.published_at,
-        url: value.html_url,
+        url: url,
+        ts,
     }
 }
