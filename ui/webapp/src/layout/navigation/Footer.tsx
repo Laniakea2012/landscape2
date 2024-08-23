@@ -122,6 +122,10 @@ const Footer = () => {
                 <div class={`pt-2 ${styles.legend}`} innerHTML={window.baseDS.footer!.text} />
               </Show>
               <div class={`pt-2 ${styles.legend}`}>
+                OpenAtom OpenHarmony（简称“OpenHarmony”）是由开放原子开源基金会（OpenAtom
+                Foundation）孵化及运营的开源项目
+              </div>
+              {/* <div class={`pt-2 ${styles.legend}`}>
                 Powered by{' '}
                 <ExternalLink
                   class="p-0 fw-semibold text-white text-underline"
@@ -130,7 +134,7 @@ const Footer = () => {
                   CNCF interactive landscapes generator
                 </ExternalLink>
                 .
-              </div>
+              </div> */}
             </div>
           </div>
         </div>

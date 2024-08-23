@@ -65,6 +65,7 @@ const Header = (props: Props) => {
               <Image class={styles.logo} logo={logo()!} name="Landscape logo" height={48} />
             </button>
           </div>
+          <div class="w-1 h-6 bg-[#000000]"></div>
         </Show>
 
         <Show
@@ -77,7 +78,7 @@ const Header = (props: Props) => {
         >
           <div class="d-flex align-items-center">
             <button
-              class={`btn btn-link position-relative text-uppercase fw-bold text-decoration-none p-0 ${styles.link}`}
+              class={`btn btn-link position-relative text-uppercase text-decoration-none p-0 ${styles.link}`}
               classList={{ activeLink: isExploreActive() }}
               onClick={() => {
                 if (isExploreActive()) {
@@ -90,14 +91,14 @@ const Header = (props: Props) => {
                   scrollToTop(false);
                 }
               }}
-              aria-label='Go to "Explore" page'
+              // aria-label='Go to "Explore" page'
             >
-              Explore
+              首页
             </button>
 
             <Show when={!isUndefined(window.baseDS.guide_summary) && !isEmpty(window.baseDS.guide_summary)}>
               <button
-                class={`btn btn-link position-relative text-uppercase fw-bold text-decoration-none p-0 ${styles.link}`}
+                class={`btn btn-link position-relative text-uppercase text-decoration-none p-0 ${styles.link}`}
                 classList={{ activeLink: isActive(GUIDE_PATH) }}
                 onClick={() => {
                   if (isActive(GUIDE_PATH)) {
@@ -109,15 +110,15 @@ const Header = (props: Props) => {
                     scrollToTop(false);
                   }
                 }}
-                aria-label='Go to "Guide" page'
+                // aria-label='Go to "Guide" page'
               >
-                Guide
+                指南
               </button>
             </Show>
 
             <Show when={props.statsVisible}>
               <button
-                class={`btn btn-link position-relative text-uppercase fw-bold text-decoration-none p-0 ${styles.link}`}
+                class={`btn btn-link position-relative text-uppercase  text-decoration-none p-0 ${styles.link}`}
                 classList={{ activeLink: isActive(STATS_PATH) }}
                 onClick={() => {
                   if (isActive(STATS_PATH)) {
@@ -129,22 +130,22 @@ const Header = (props: Props) => {
                     scrollToTop(false);
                   }
                 }}
-                aria-label='Go to "Stats" page'
+                // aria-label='Go to "Stats" page'
               >
-                Stats
+                统计
               </button>
             </Show>
           </div>
 
           <div class={`d-flex flex-row align-items-center ms-auto mt-0 ${styles.searchWrapper}`}>
-            <div class="position-relative me-4 w-100">
+            <div class="position-relative me-4 w-100 h-100">
               <Searchbar searchBarClass={`${styles.searchBar}`} device="desktop" />
             </div>
 
             <div class={`d-flex align-items-center ${styles.icons}`}>
               <EmbedModal />
               <DownloadDropdown />
-              <Show when={!isUndefined(window.baseDS.games_available)}>
+              {/* <Show when={!isUndefined(window.baseDS.games_available)}>
                 <button
                   class={`btn btn-md text-dark ms-3 px-0 ${styles.btnLink}`}
                   onClick={() => {
@@ -157,8 +158,8 @@ const Header = (props: Props) => {
                 >
                   <SVGIcon kind={SVGIconKind.Games} class={`position-relative ${styles.linkIcon}`} />
                 </button>
-              </Show>
-              <Show
+              </Show> */}
+              {/* <Show
                 when={
                   !isUndefined(window.baseDS.header) &&
                   !isUndefined(window.baseDS.header!.links) &&
@@ -171,7 +172,7 @@ const Header = (props: Props) => {
                 >
                   <SVGIcon kind={SVGIconKind.GitHub} class={`position-relative ${styles.linkIcon}`} />
                 </ExternalLink>
-              </Show>
+              </Show> */}
             </div>
           </div>
         </Show>

@@ -2,18 +2,45 @@
   height: 33px;
   width: 500px;
   font-size: 0.8rem;
-  box-shadow: 0 0 0 0.15rem var(--bs-gray-200);
+  /* box-shadow: 0 0 0 0.15rem var(--bs-gray-200); */
   margin-right: 0.15rem;
   margin: 0 0.15rem;
+  border-radius: 9999px;
+  background: #fff;
+  border: 1px solid !important;
+}
+.searchButton {
+  flex-shrink: 0;
+  width: 68px;
+  height: 38px;
+  margin-right: 5px;
+  margin-top: 1px;
+  background: linear-gradient(270deg, #7ac943 0, #41aaef 100%);
+  border-radius: 9999px;
+  padding-top: 6px;
+  text-align: center;
+  vertical-align: middle;
+}
+.searchText {
+  font-size: 16px;
+  color: #fff;
+  cursor: default;
+}
+.input {
+  min-width: 100px;
+  flex: auto;
+  border-radius: 50px;
 }
 
 .btnIcon {
   line-height: 0.9rem;
+  font-size: 1.25rem;
+  margin-left: 10px;
 }
 
-.iconWrapper {
+/* .iconWrapper {
   color: var(--bs-secondary);
-}
+} */
 
 .vr {
   margin: 0.4rem 0;
