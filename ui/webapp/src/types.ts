@@ -207,6 +207,7 @@ export interface GithubRepository {
   license: string;
   participation_stats: number[];
   stars: number;
+  ohpm_downloads: number;
   topics: string[];
   url: string;
 }
@@ -377,6 +378,7 @@ export interface Stats {
     participation_stats: number[];
     repositories: number;
     stars: number;
+    ohpm_downloads: number;
   };
   organizations?: {
     acquisitions: { [key: string]: number };

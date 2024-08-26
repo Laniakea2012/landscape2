@@ -5,3 +5,4 @@ export { formatTAGName } from './formatTAGName';
 export { getItemDescription } from './getItemDescription';
 export { prettifyNumber } from './prettifyNumber';
 export { sortObjectByValue } from './sortObjectByValue';
+export { isGitee } from './isGitee';
