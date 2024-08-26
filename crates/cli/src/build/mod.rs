@@ -177,7 +177,7 @@ pub async fn build(args: &BuildArgs) -> Result<()> {
     prepare_settings_images(&mut settings, &args.output_dir).await?;
 
     // Collect data from external services
-    let (crunchbase_data, github_data, gitee_data) = tokio::try_join!(
+    let (crunchbase_data, mut github_data, gitee_data) = tokio::try_join!(
         collect_crunchbase_data(&cache, &landscape_data),
         collect_github_data(&cache, &landscape_data),
         collect_gitee_data(&cache, &landscape_data)
@@ -185,10 +185,10 @@ pub async fn build(args: &BuildArgs) -> Result<()> {
 
     // Enrich landscape data with some extra information from the settings and
     // external services
+    github_data.extend(gitee_data);
     landscape_data.add_crunchbase_data(&crunchbase_data);
     landscape_data.add_featured_items_data(&settings);
     landscape_data.add_github_data(&github_data);
-    landscape_data.add_github_data(&gitee_data);
     landscape_data.add_member_subcategory(&settings.members_category);
     landscape_data.add_tags(&settings);
     landscape_data.set_enduser_flag(&settings);
