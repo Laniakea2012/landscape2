@@ -325,7 +325,11 @@ export const ItemModalContent = (props: Props) => {
 
                   <Show when={!isUndefined(primaryRepo())}>
                     <ExternalLink title="Repository" class={`ms-3 ${Link}`} href={primaryRepo()!.url}>
-                      <SVGIcon kind={SVGIconKind.GitHubCircle} />
+                      {primaryRepo()!.url.includes('gitee.com') ? (
+                        <SVGIcon kind={SVGIconKind.Gitee} />
+                      ) : (
+                        <SVGIcon kind={SVGIconKind.GitHubCircle} />
+                      )}
                     </ExternalLink>
                   </Show>
 
