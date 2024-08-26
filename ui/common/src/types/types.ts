@@ -190,6 +190,7 @@ export enum SVGIconKind {
   Flickr,
   Flutter,
   Games,
+  Gitee,
   GitHub,
   GitHubCircle,
   Guide,

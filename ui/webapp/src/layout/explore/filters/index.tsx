@@ -178,7 +178,7 @@ const Filters = (props: Props) => {
         >
           <div class="d-flex flex-row align-items-center">
             <SVGIcon kind={SVGIconKind.Filters} />
-            <div class="d-none d-lg-block fw-semibold ps-2">Filters</div>
+            <div class="d-none d-lg-block fw-semibold ps-2">筛选</div>
           </div>
         </button>
         <Show when={!isEmpty(props.initialActiveFilters())}>

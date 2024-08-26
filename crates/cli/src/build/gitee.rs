@@ -21,6 +21,12 @@ use tracing::{debug, instrument, warn};
 use serde::{Serialize, Deserialize};
 use serde_json::Value;
 
+use std::fs;
+use std::path::Path;
+use std::io::{self, BufRead};
+use std::process::Command;
+use git2::{Repository, RepositoryOpenFlags, build::CheckoutBuilder};
+
 type GiteeData = GithubData;
 type RepositoryGiteeData = RepositoryGithubData;
 
@@ -239,7 +245,9 @@ struct PartRepository {
     //     skip_serializing_if = "String::is_empty",
     //     deserialize_with = "crate::utils::deserialize_null_string::deserialize"
     // )]
-    pub html_url: String
+    pub html_url: String,
+    // #[serde(skip_serializing_if = "Option::is_none")]
+    pub languages: Option<BTreeMap<String, i64>>
 }
 
 impl GTApi {
@@ -332,11 +340,70 @@ impl GT for GTApi {
     /// [GT::get_languages]
     #[instrument(skip(self), err)]
     async fn get_languages(&self, owner: &str, repo: &str) -> Result<Option<BTreeMap<String, i64>>> {
-        // let url = format!("{GITEE_API_URL}/repos/{owner}/{repo}/languages");
-        // let languages: BTreeMap<String, i64> = self.http_client.get(url).send().await?.json().await?;
-        // Ok(Some(languages))
-        Ok(None)
-    }
+        let url = format!("https://gitee.com/{}/{}", owner, repo);
+        let repo_dir = format!("./repos/{}/{}", owner, repo);
+        let repo_path = Path::new(&repo_dir);
+
+        let repository = match Repository::open_ext(repo_path, RepositoryOpenFlags::empty(), Vec::<&str>::new()) {
+            Ok(repo) => {
+                println!("Repository exists. Pulling changes...");
+                let mut remote = repo.find_remote("origin").unwrap_or_else(|e| panic!("failed to find remote: {}", e));
+                remote.fetch::<String>(&[], None, None).unwrap_or_else(|e| panic!("fetch failed: {}", e));
+                // Merge a remote branch into the local repository.
+                let default_branch = get_default_branch(&repo_dir).unwrap();
+                let refname = format!("refs/remotes/{}/{}", "origin", &default_branch);
+                let obj = repo.revparse_single(&refname).unwrap_or_else(|e| panic!("failed to revparse: {}", e));
+                let obj_id = obj.id();
+                let reference = repo.find_reference(&refname).unwrap_or_else(|e| panic!("failed to find reference: {}", e));
+
+                // Create a checkout builder and perform merge operation.
+                let mut checkout_builder = CheckoutBuilder::new();
+                repo.checkout_tree(&obj, Some(&mut checkout_builder)).unwrap_or_else(|e| panic!("checkout failed: {}", e));
+
+                // Update HEAD to the latest commit.
+                repo.set_head(&refname).unwrap_or_else(|e| panic!("failed to set HEAD: {}", e));
+
+                // Complete merger
+                match repo.merge_base(reference.target().unwrap(), obj_id) {
+                    Ok(_) => println!("Merge successful"),
+                    Err(e) => panic!("merge failed: {}", e),
+                };
+            },
+            Err(_) => {
+                println!("Repository does not exist. Cloning repository...");
+                Repository::clone(&url, repo_path)?;
+            }
+        };
+
+        let output = Command::new("github-linguist")
+            .args(&[&repo_dir, "--json"])
+            .output()
+            .expect("failed to execute process");
+
+        let mut languages = BTreeMap::new();
+
+        if output.status.success() {
+            let linguist_result: Value = serde_json::from_str(&String::from_utf8_lossy(&output.stdout))?;
+            if let Value::Object(map) = linguist_result {
+
+                for (key, value) in map {
+                    if let Value::Object(inner_map) = value {
+                        if let Some(Value::Number(num)) = inner_map.get("size") {
+                            let size = num.as_i64().unwrap();
+                            languages.insert(key.to_string(), size);
+                        }
+                    }
+                }
+            } else {
+                eprintln!("Invalid JSON format");
+            }
+        } else {
+            let stderr = String::from_utf8_lossy(&output.stderr);
+            println!("Error: {}", stderr);
+        }
+
+        Ok(Some(languages))
+}
 
     /// [GT::get_latest_commit]
     #[instrument(skip(self), err)]
@@ -440,7 +507,12 @@ impl GT for GTApi {
             stargazers_count: body_json.get("stargazers_count").and_then(Value::as_i64).unwrap_or_default(),
             topics: body_json.get("topics").map(|val| vec![val.to_string()]).unwrap_or_default(),
             html_url: body_json.get("html_url").map(Value::to_string).unwrap_or_default(),
+            // Gitee do not provide languages messages of a repository; the value of languages responsed by gitee api is always Null.
+            // Generate a default value temporarily.
+            // languages: body_json.get("languages").map(Value::to_string).unwrap_or_default()
+            languages: Some(BTreeMap::new())
         };
+
 
         // println!("Parsed JSON body: {:?}", repo);
         println!("get_repository success");
@@ -504,4 +576,21 @@ fn new_release_from(value: &Value) -> Release {
         url: url,
         ts,
     }
+}
+
+fn get_default_branch(repo_path: &str) -> Option<String> {
+    let head_file = format!("{}/.git/HEAD", repo_path);
+
+    if let Ok(file) = fs::File::open(&head_file) {
+        let reader = io::BufReader::new(file);
+        for line in reader.lines() {
+            if let Ok(line) = line {
+                if line.starts_with("ref: refs/heads/") {
+                    return Some(line.replace("ref: refs/heads/", "").trim().to_string());
+                }
+            }
+        }
+    }
+
+    None
 }

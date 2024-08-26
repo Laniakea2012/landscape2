@@ -604,7 +604,7 @@ const Explore = (props: Props) => {
             <Show when={visibleLoading()}>
               <div class="d-flex d-lg-none ms-2">
                 <div class={`spinner-border text-secondary mt-1 ${styles.spinner}`} role="status">
-                  <span class="visually-hidden">Loading...</span>
+                  <span class="visually-hidden">加载中...</span>
                 </div>
               </div>
             </Show>
@@ -612,7 +612,7 @@ const Explore = (props: Props) => {
             <div class="d-none d-lg-flex align-items-center">
               <Show when={props.initialData.groups}>
                 <div class={styles.btnGroupLegend}>
-                  <small class="text-muted me-2">GROUP:</small>
+                  <small class="text-muted me-2">分组：</small>
                 </div>
                 <div
                   ref={setControlsGroupWrapper}
@@ -700,7 +700,7 @@ const Explore = (props: Props) => {
               </Show>
             </div>
             <div class={`d-none d-md-block ms-0 ms-md-auto ms-lg-0 ${styles.btnGroupLegend}`}>
-              <small class="text-muted text-nowrap me-2">VIEW MODE:</small>
+              <small class="text-muted text-nowrap me-2">视图模式：</small>
             </div>
             <div
               class={`btn-group btn-group-sm me-0 me-lg-4 ms-auto ms-md-0 ${styles.btnGroup}`}

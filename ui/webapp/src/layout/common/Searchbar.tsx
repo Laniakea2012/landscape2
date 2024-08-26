@@ -203,17 +203,21 @@ const Searchbar = (props: Props) => {
         <label for={`searchbar-${props.device}`} class="visually-hidden">
           Search items
         </label>
+
+        <div class={`px-2 py-1 ${styles.btnIcon} ${styles.iconWrapper}`}>
+          <SVGIcon kind={SVGIconKind.Search} />
+        </div>
         <input
           id={`searchbar-${props.device}`}
           ref={setInputEl}
-          class={`flex-grow-1 ps-2 ps-md-3 border-0 shadow-none bg-transparent lh-base ${styles.input}`}
+          class={`ps-2 border-0 shadow-none bg-transparent lh-base ${styles.input}`}
           type="text"
           value={value()}
           autocomplete="off"
           autocorrect="off"
           autocapitalize="none"
           spellcheck={false}
-          placeholder="Search items"
+          placeholder=""
           onKeyDown={onKeyDown}
           onInput={(e) => setValue(e.target.value)}
         />
@@ -232,8 +236,8 @@ const Searchbar = (props: Props) => {
           <div class={`vr ${styles.vr}`} />
         </Show>
 
-        <div class={`px-2 py-1 ${styles.btnIcon} ${styles.iconWrapper}`}>
-          <SVGIcon kind={SVGIconKind.Search} />
+        <div class={`d-none d-lg-block ${styles.searchButton}`}>
+          <span class={`${styles.searchText}`}>搜索</span>
         </div>
       </div>
 
@@ -250,7 +254,7 @@ const Searchbar = (props: Props) => {
             when={itemsList()!.length > 0}
             fallback={
               <div class="p-4 text-center fst-italic text-muted">
-                <small>{error() || `We couldn't find any items that match that criteria.`}</small>
+                <small>{error() || `未找到匹配的结果。`}</small>
               </div>
             }
           >
