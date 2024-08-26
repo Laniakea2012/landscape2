@@ -1,18 +1,10 @@
 import { useLocation, useNavigate } from '@solidjs/router';
-import { ExternalLink, Image, SVGIcon, SVGIconKind } from 'common';
+import { Image } from 'common';
 import isEmpty from 'lodash/isEmpty';
 import isUndefined from 'lodash/isUndefined';
 import { createMemo, Show } from 'solid-js';
 
-import {
-  ALL_OPTION,
-  DEFAULT_VIEW_MODE,
-  EXPLORE_PATH,
-  GAMES_PATH,
-  GUIDE_PATH,
-  SCREENSHOTS_PATH,
-  STATS_PATH,
-} from '../../data';
+import { ALL_OPTION, DEFAULT_VIEW_MODE, EXPLORE_PATH, GUIDE_PATH, SCREENSHOTS_PATH, STATS_PATH } from '../../data';
 import isExploreSection from '../../utils/isExploreSection';
 import itemsDataGetter from '../../utils/itemsDataGetter';
 import prepareLink from '../../utils/prepareLink';
