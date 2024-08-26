@@ -138,6 +138,7 @@ async fn collect_repository_data(gt: Object<DynGT>, repo_url: &str) -> Result<Re
     let (owner, repo) = get_owner_and_repo(repo_url)?;
     let gt_repo = gt.get_repository(&owner, &repo).await?;
     let contributors_count = gt.get_contributors_count(&owner, &repo).await?;
+    let license = gt.get_license(&owner, &repo).await?;
     let first_commit = gt.get_first_commit(&owner, &repo, &gt_repo.default_branch).await?;
     let languages = gt.get_languages(&owner, &repo).await?;
     let latest_commit = gt.get_latest_commit(&owner, &repo, &gt_repo.default_branch).await?;
@@ -156,14 +157,7 @@ async fn collect_repository_data(gt: Object<DynGT>, repo_url: &str) -> Result<Re
         languages,
         latest_commit,
         latest_release,
-        // license: gt_repo.license.and_then(|l| {
-        //     if l.name == "NOASSERTION" {
-        //         None
-        //     } else {
-        //         Some(l.name)
-        //     }
-        // }),
-        license: Some("TODO".to_string()),
+        license: Some(license),
         participation_stats,
         stars: gt_repo.stargazers_count,
         topics: gt_repo.topics,
@@ -183,6 +177,9 @@ type DynGT = Box<dyn GT + Send + Sync>;
 trait GT {
     /// Get number of repository contributors.
     async fn get_contributors_count(&self, owner: &str, repo: &str) -> Result<usize>;
+
+    /// Get license.
+    async fn get_license(&self, owner: &str, repo: &str) -> Result<String>;
 
     /// Get first commit.
     async fn get_first_commit(&self, owner: &str, repo: &str, ref_: &str) -> Result<Option<Commit>>;
@@ -288,6 +285,23 @@ impl GT for GTApi {
         let length = body_json.as_array().map_or(0, |arr| arr.len());
         println!("get_contributors_count success");
         Ok(length)
+    }
+
+    /// [GT::get_license]
+    #[instrument(skip(self), err)]
+    async fn get_license(&self, owner: &str, repo: &str) -> Result<String> {
+        let url = format!("{GITEE_API_URL}/repos/{owner}/{repo}/license");
+        let response = self.http_client.get(url).send().await?;
+
+        if !response.status().is_success() {
+            return Err(format_err!("get_license failed!"));
+        }
+
+        let body_text: String = response.text().await?;
+        let body_json: Value = serde_json::from_str(&body_text)?;
+        let license = body_json.get("license").and_then(Value::as_str).map(|s| s.to_owned()).unwrap_or_default();
+        println!("get_license success");
+        Ok(license)
     }
 
     /// [GT::get_first_commit]
