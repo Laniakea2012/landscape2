@@ -155,6 +155,9 @@ categories:
                 # Documentation URL (optional).
                 documentation_url: https://documentation.url
 
+                # OHPM URL (optional).
+                ohpm_url: https://ohpm.url
+
                 # GitHub discussions URL (optional).
                 github_discussions_url: https://github.discussions.url
 
