@@ -15,7 +15,7 @@ use mockall::automock;
 use octorust::types::ParticipationStats;
 use regex::Regex;
 use reqwest::header::{self, HeaderMap, HeaderValue};
-use std::collections::BTreeMap;
+use std::collections::{BTreeMap, HashMap};
 use std::env;
 use tracing::{debug, instrument, warn};
 use serde::{Serialize, Deserialize};
@@ -69,11 +69,15 @@ pub(crate) async fn collect_gitee_data(cache: &Cache, landscape_data: &Landscape
 
     // Collect urls of the repositories to process
     let mut urls = vec![];
+    let mut ohpm_url_hash = HashMap::<String, String>::new();
     for item in &landscape_data.items {
         if let Some(repositories) = &item.repositories {
             for repo in repositories {
                 if GITEE_REPO_URL.is_match(&repo.url) {
                     urls.push(&repo.url);
+                    if let Some(ohpm_url) = &item.ohpm_url {
+                        ohpm_url_hash.insert(repo.url.clone(), ohpm_url.clone());
+                    }
                 }
             }
         }
@@ -106,7 +110,13 @@ pub(crate) async fn collect_gitee_data(cache: &Cache, landscape_data: &Landscape
             // Otherwise we pull it from Gitee if any tokens were provided
             else if let Some(gt_pool) = &gt_pool {
                 let gt = gt_pool.get().await.expect("token -when available-");
-                (url.clone(), collect_repository_data(gt, &url).await)
+                if let Some(ohpm_url) = ohpm_url_hash.get(&url).cloned() {
+                    let result = collect_repository_data(gt, &url, &ohpm_url).await;
+                    (url.clone(), result)
+                } else {
+                    let result = collect_repository_data(gt, &url, "").await;
+                    (url.clone(), result)
+                }
             } else {
                 (url.clone(), Err(format_err!("no tokens provided")))
             }
@@ -133,7 +143,7 @@ pub(crate) async fn collect_gitee_data(cache: &Cache, landscape_data: &Landscape
 
 /// Collect repository data from Gitee.
 #[instrument(skip_all, err)]
-async fn collect_repository_data(gt: Object<DynGT>, repo_url: &str) -> Result<RepositoryGiteeData> {
+async fn collect_repository_data(gt: Object<DynGT>, repo_url: &str, ohpm_url: &str) -> Result<RepositoryGiteeData> {
     // Collect some information from Gitee
     let (owner, repo) = get_owner_and_repo(repo_url)?;
     let gt_repo = gt.get_repository(&owner, &repo).await?;
@@ -143,6 +153,10 @@ async fn collect_repository_data(gt: Object<DynGT>, repo_url: &str) -> Result<Re
     let languages = gt.get_languages(&owner, &repo).await?;
     let latest_commit = gt.get_latest_commit(&owner, &repo, &gt_repo.default_branch).await?;
     let latest_release = gt.get_latest_release(&owner, &repo).await?;
+    let mut ohpm_downloads: i64 = 0;
+    if !ohpm_url.is_empty() {
+        ohpm_downloads = gt.get_ohpm_downloads(&owner, &repo, &ohpm_url).await?;
+    }
     let participation_stats = gt.get_participation_stats(&owner, &repo).await?.all;
 
     // Prepare repository instance using the information collected
@@ -160,6 +174,7 @@ async fn collect_repository_data(gt: Object<DynGT>, repo_url: &str) -> Result<Re
         license: Some(license),
         participation_stats,
         stars: gt_repo.stargazers_count,
+        ohpm_downloads: ohpm_downloads,
         topics: gt_repo.topics,
         url: gt_repo.html_url,
     })
@@ -177,6 +192,9 @@ type DynGT = Box<dyn GT + Send + Sync>;
 trait GT {
     /// Get number of repository contributors.
     async fn get_contributors_count(&self, owner: &str, repo: &str) -> Result<usize>;
+
+    /// Get number of repository contributors.
+    async fn get_ohpm_downloads(&self, owner: &str, repo: &str, ohpm_url: &str) -> Result<i64>;
 
     /// Get license.
     async fn get_license(&self, owner: &str, repo: &str) -> Result<String>;
@@ -277,14 +295,31 @@ impl GT for GTApi {
         let response = self.http_client.get(url).send().await?;
 
         if !response.status().is_success() {
-            return Err(format_err!("get_contributors_count failed!"));
+            return Err(format_err!("https://gitee.com/{}/{} get_contributors_count failed!", owner, repo));
         }
 
         let body_text: String = response.text().await?;
         let body_json: Value = serde_json::from_str(&body_text)?;
         let length = body_json.as_array().map_or(0, |arr| arr.len());
-        println!("get_contributors_count success");
+        println!("https://gitee.com/{}/{} get_contributors_count success", owner, repo);
         Ok(length)
+    }
+
+    /// [GT::get_ohpm_downloads]
+    #[instrument(skip(self), err)]
+    async fn get_ohpm_downloads(&self, owner: &str, repo: &str, ohpm_url: &str) -> Result<i64> {
+        let url = format!("{ohpm_url}");
+        let response = self.http_client.get(url).send().await?;
+
+        if !response.status().is_success() {
+            return Err(format_err!("https://gitee.com/{}/{} get_ohpm_downloads failed!", owner, repo));
+        }
+
+        let body_text: String = response.text().await?;
+        let body_json: Value = serde_json::from_str(&body_text)?;
+        let downloads = body_json["body"]["downloads"].as_i64().unwrap_or(0);
+        println!("https://gitee.com/{}/{} get_ohpm_downloads success", owner, repo);
+        Ok(downloads)
     }
 
     /// [GT::get_license]
@@ -294,13 +329,13 @@ impl GT for GTApi {
         let response = self.http_client.get(url).send().await?;
 
         if !response.status().is_success() {
-            return Err(format_err!("get_license failed!"));
+            return Err(format_err!("https://gitee.com/{}/{} get_license failed!", owner, repo));
         }
 
         let body_text: String = response.text().await?;
         let body_json: Value = serde_json::from_str(&body_text)?;
         let license = body_json.get("license").and_then(Value::as_str).map(|s| s.to_owned()).unwrap_or_default();
-        println!("get_license success");
+        println!("https://gitee.com/{}/{} get_license success", owner, repo);
         Ok(license)
     }
 
@@ -316,14 +351,14 @@ impl GT for GTApi {
         let last_page_url = format!("{GITEE_API_URL}/repos/{owner}/{repo}/commits?sha={ref_}&per_page=1&page={last_page}");
         let response = self.http_client.get(last_page_url).send().await?;
         if !response.status().is_success() {
-            return Err(format_err!("get_first_commit failed!"));
+            return Err(format_err!("https://gitee.com/{}/{} get_first_commit failed!", owner, repo));
         }
 
         let body_text: String = response.text().await?;
         let body_json: Value = serde_json::from_str(&body_text)?;
 
         if let Some(commit) = body_json.as_array().and_then(|arr| arr.get(0)) {
-            println!("get_first_commit success");
+            println!("https://gitee.com/{}/{} get_first_commit success", owner, repo);
             return Ok(Some(new_commit_from(commit)));
         }
         Ok(None)
@@ -345,14 +380,14 @@ impl GT for GTApi {
         let response = self.http_client.get(url).send().await?;
 
         if !response.status().is_success() {
-            return Err(format_err!("get_first_commit failed!"));
+            return Err(format_err!("https://gitee.com/{}/{} get_first_commit failed!", owner, repo));
         }
 
         let body_text: String = response.text().await?;
         let body_json: Value = serde_json::from_str(&body_text)?;
 
         if let Some(commit) = body_json.as_array().and_then(|arr| arr.get(0)) {
-            println!("get_latest_commit success");
+            println!("https://gitee.com/{}/{} get_latest_commit success", owner, repo);
             return Ok(new_commit_from(commit));
         }
         Ok(Commit::default())
@@ -365,14 +400,14 @@ impl GT for GTApi {
         let response = self.http_client.get(url).send().await?;
 
         if !response.status().is_success() {
-            return Err(format_err!("get_latest_release failed!"));
+            return Err(format_err!("https://gitee.com/{}/{} get_latest_release failed!", owner, repo));
         }
 
         let body_text: String = response.text().await?;
         let body_json: Value = serde_json::from_str(&body_text)?;
 
         if let Some(release) = body_json.as_array().and_then(|arr| arr.get(0)) {
-            println!("get_latest_release success");
+            println!("https://gitee.com/{}/{} get_latest_release success", owner, repo);
             return Ok(Some(new_release_from(release)));
         }
         Ok(None)
@@ -389,7 +424,7 @@ impl GT for GTApi {
             let response = self.http_client.get(url).send().await?;
 
             if !response.status().is_success() {
-                return Err(format_err!("get_first_commit failed!"));
+                return Err(format_err!("https://gitee.com/{}/{} get_first_commit failed!", owner, repo));
             }
 
             let body_text: String = response.text().await?;
@@ -416,7 +451,7 @@ impl GT for GTApi {
             }
             page += 1
         }
-        println!("get_participation_stats success");
+        println!("https://gitee.com/{}/{} get_participation_stats success", owner, repo);
         Ok(ParticipationStats{all: week_commit_count.to_vec(), owner: vec![]})
     }
 
@@ -427,13 +462,13 @@ impl GT for GTApi {
         let response = self.http_client.get(url).send().await?;
 
         if !response.status().is_success() {
-            return Err(format_err!("get_repository failed!"));
+            return Err(format_err!("https://gitee.com/{}/{} get_repository failed!", owner, repo));
         }
 
         let body_text: String = response.text().await?;
         let body_json: Value = serde_json::from_str(&body_text)?;
 
-        let mut repo = PartRepository {
+        let part_repo = PartRepository {
             default_branch: body_json.get("default_branch").and_then(Value::as_str).map(|s| s.to_owned()).unwrap_or_default(),
             description: body_json.get("description").map(Value::to_string).unwrap_or_default(),
             license: body_json.get("license").map(|val| vec![val.to_string()]),
@@ -443,8 +478,8 @@ impl GT for GTApi {
         };
 
         // println!("Parsed JSON body: {:?}", repo);
-        println!("get_repository success");
-        Ok(repo)
+        println!("https://gitee.com/{}/{} get_repository success", owner, repo);
+        Ok(part_repo)
     }
 }
 
