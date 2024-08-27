@@ -126,6 +126,7 @@ export interface GithubRepository {
   license: string;
   participation_stats: number[];
   stars: number;
+  ohpm_downloads: number;
   topics: string[];
   url: string;
 }

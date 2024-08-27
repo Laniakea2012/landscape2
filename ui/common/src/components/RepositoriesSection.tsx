@@ -7,6 +7,7 @@ import { css } from 'solid-styled-components';
 
 import { Repository, SVGIconKind } from '../types/types';
 import { prettifyNumber } from '../utils/prettifyNumber';
+import { isGitee } from '../utils';
 import { Box } from './Box';
 import { ExternalLink } from './ExternalLink';
 import { LanguagesStats } from './LanguagesStats';
@@ -93,7 +94,6 @@ const RepositoryInfo = (props: RepoProps) => {
   const formatDate = (date: string): string => {
     return moment(date).format("MMM 'YY");
   };
-
   return (
     <>
       <div class="d-flex flex-row align-items-start mt-4">
@@ -122,26 +122,34 @@ const RepositoryInfo = (props: RepoProps) => {
                   {props.repository.github_data!.license}
                 </div>
               </Show>
-              <div class="d-none d-md-flex">
-                <ExternalLink
-                  class={`d-flex ${GoodFirstBadge}`}
-                  href={`https://github.com/${formatRepoUrl(
-                    props.repository.url
-                  )}/issues?q=is%3Aopen+is%3Aissue+label%3A"good+first+issue"`}
-                >
-                  <img
-                    src={`https://img.shields.io/github/issues/${formatRepoUrl(
+              <Show when={!isGitee(props.repository.url)}>
+                <div class="d-none d-md-flex">
+                  <ExternalLink
+                    class={`d-flex ${GoodFirstBadge}`}
+                    href={`https://github.com/${formatRepoUrl(
                       props.repository.url
-                    )}/good%20first%20issue.svg?style=flat-square&label=good%20first%20issues&labelColor=e9ecef&color=6c757d`}
-                  />
-                </ExternalLink>
-              </div>
+                    )}/issues?q=is%3Aopen+is%3Aissue+label%3A"good+first+issue"`}
+                  >
+                    <img
+                      src={`https://img.shields.io/github/issues/${formatRepoUrl(
+                        props.repository.url
+                      )}/good%20first%20issue.svg?style=flat-square&label=good%20first%20issues&labelColor=e9ecef&color=6c757d`}
+                    />
+                  </ExternalLink>
+                </div>
+              </Show>
             </div>
           </Show>
         </div>
       </div>
       <Show when={!isUndefined(props.repository.github_data)}>
         <div class="row g-4 my-0 mb-2 justify-content-center justify-md-content-start">
+          <Box
+            class={props.boxClass}
+            value={prettifyNumber(props.repository.github_data!.ohpm_downloads, 1)}
+            legend="Ohpm Downloads"
+            description="Ohpm Downloads"
+          />
           <Box
             class={props.boxClass}
             value={prettifyNumber(props.repository.github_data!.stars, 1)}

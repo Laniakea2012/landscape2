@@ -773,7 +773,7 @@ const Explore = (props: Props) => {
                 </Match>
                 <Match when={viewMode() === ViewMode.Card}>
                   <div class={styles.btnGroupLegend}>
-                    <small class="text-muted text-uppercase me-2">Classify:</small>
+                    <small class="text-muted text-uppercase me-2">分类：</small>
                   </div>
                   <select
                     id="classify"
@@ -798,7 +798,7 @@ const Explore = (props: Props) => {
                     </For>
                   </select>
                   <div class={styles.btnGroupLegend}>
-                    <small class="text-muted text-uppercase me-2">Sort:</small>
+                    <small class="text-muted text-uppercase me-2">排序：</small>
                   </div>
                   <select
                     id="sorted"

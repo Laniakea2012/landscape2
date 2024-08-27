@@ -11,13 +11,13 @@
 }
 .searchButton {
   flex-shrink: 0;
-  width: 68px;
-  height: 38px;
-  margin-right: 5px;
+  width: 60px;
+  height: 30px;
+  margin-right: 4px;
   margin-top: 1px;
   background: linear-gradient(270deg, #7ac943 0, #41aaef 100%);
   border-radius: 9999px;
-  padding-top: 6px;
+  padding-top: 3px;
   text-align: center;
   vertical-align: middle;
 }
