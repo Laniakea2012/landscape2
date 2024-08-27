@@ -95,7 +95,11 @@ const Card = (props: Props) => {
 
             <Show when={!isUndefined(primaryRepoUrl())}>
               <ExternalLink title="Repository" class={`me-2 ${styles.link}`} href={primaryRepoUrl()!}>
-                12 <SVGIcon kind={SVGIconKind.GitHubCircle} />
+                {primaryRepoUrl()?.includes('gitee.com') ? (
+                  <SVGIcon kind={SVGIconKind.Gitee} />
+                ) : (
+                  <SVGIcon kind={SVGIconKind.GitHubCircle} />
+                )}
               </ExternalLink>
             </Show>
 

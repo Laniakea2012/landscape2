@@ -20,6 +20,12 @@ const Footer = () => {
               <SVGIcon kind={SVGIconKind.Twitter} />
             </ExternalLink>
           </Show>
+          <ExternalLink
+            class={`me-3 me-lg-0 ms-0 ms-lg-3 ps-0 pe-2 ${styles.link}`}
+            href={'https://gitee.com/openharmony'}
+          >
+            <SVGIcon kind={SVGIconKind.Gitee} />
+          </ExternalLink>
           <Show when={!isUndefined(links!.github)}>
             <ExternalLink class={`me-3 me-lg-0 ms-0 ms-lg-3 ps-0 pe-2 ${styles.link}`} href={links!.github as string}>
               <SVGIcon kind={SVGIconKind.GitHub} />
