@@ -51,10 +51,10 @@ const Category = (props: CatProps) => {
     <Show when={!isUndefined(subcategories()) && subcategories()!.length > 0}>
       <div class="d-flex flex-row">
         <div
-          class={`text-white border border-3 border-white fw-medium border-end-0 d-flex flex-row align-items-center justify-content-end ${styles.catTitle}`}
+          class={`text-white border border-3 border-white fw-medium d-flex flex-row align-items-center justify-content-start ${styles.catTitle}`}
           classList={{
-            'border-bottom-0': props.index !== 0,
-            'border-top-0': props.index === props.catSectionNumber,
+            'border-top-0': props.index !== 0,
+            'border-bottom-0': props.index === props.catSectionNumber,
           }}
           style={{ 'background-color': props.bgColor }}
         >
