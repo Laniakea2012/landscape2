@@ -425,6 +425,7 @@ impl From<legacy::LandscapeData> for LandscapeData {
                         item.discord_url = extra.discord_url;
                         item.docker_url = extra.docker_url;
                         item.documentation_url = extra.documentation_url;
+                        item.ohpm_url = extra.ohpm_url;
                         item.github_discussions_url = extra.github_discussions_url;
                         item.gitter_url = extra.gitter_url;
                         item.graduated_at = extra.graduated;
@@ -575,6 +576,9 @@ pub struct Item {
 
     #[serde(skip_serializing_if = "Option::is_none")]
     pub documentation_url: Option<String>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub ohpm_url: Option<String>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
     pub enduser: Option<bool>,
@@ -921,6 +925,7 @@ pub struct RepositoryGithubData {
     pub latest_commit: Commit,
     pub participation_stats: Vec<i64>,
     pub stars: i64,
+    pub ohpm_downloads: i64,
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub topics: Vec<String>,
     pub url: String,
@@ -1376,6 +1381,7 @@ mod tests {
                             discord_url: Some("discord_url".to_string()),
                             docker_url: Some("docker_url".to_string()),
                             documentation_url: Some("documentation_url".to_string()),
+                            ohpm_url: Some("ohpm_url".to_string()),
                             github_discussions_url: Some("github_discussions_url".to_string()),
                             gitter_url: Some("gitter_url".to_string()),
                             graduated: Some(date),
@@ -1456,6 +1462,7 @@ mod tests {
                 discord_url: Some("discord_url".to_string()),
                 docker_url: Some("docker_url".to_string()),
                 documentation_url: Some("documentation_url".to_string()),
+                ohpm_url: Some("ohpm_url".to_string()),
                 enduser: Some(false),
                 featured: None,
                 github_discussions_url: Some("github_discussions_url".to_string()),
