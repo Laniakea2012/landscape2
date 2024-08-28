@@ -17,11 +17,8 @@ const MiniFooter = () => {
               </Show>
               <div class={styles.legend}>
                 Powered by{' '}
-                <ExternalLink
-                  class="p-0 fw-semibold text-white text-underline"
-                  href="https://github.com/cncf/landscape2"
-                >
-                  CNCF interactive landscapes generator
+                <ExternalLink class="p-0 fw-semibold text-white text-underline" href="https://oss-compass.org">
+                  Oss-Compass
                 </ExternalLink>
                 .
               </div>

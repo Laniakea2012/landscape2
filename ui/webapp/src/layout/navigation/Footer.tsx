@@ -20,6 +20,12 @@ const Footer = () => {
               <SVGIcon kind={SVGIconKind.Twitter} />
             </ExternalLink>
           </Show>
+          <ExternalLink
+            class={`me-3 me-lg-0 ms-0 ms-lg-3 ps-0 pe-2 ${styles.link}`}
+            href={'https://gitee.com/openharmony'}
+          >
+            <SVGIcon kind={SVGIconKind.Gitee} />
+          </ExternalLink>
           <Show when={!isUndefined(links!.github)}>
             <ExternalLink class={`me-3 me-lg-0 ms-0 ms-lg-3 ps-0 pe-2 ${styles.link}`} href={links!.github as string}>
               <SVGIcon kind={SVGIconKind.GitHub} />
@@ -86,7 +92,7 @@ const Footer = () => {
                     (!isUndefined(window.baseDS.footer!.links) && !isEmpty(window.baseDS.footer!.links))
                   }
                 >
-                  <div class="d-flex flex-column flex-lg-row justify-content-start align-items-lg-center w-100">
+                  <div class="d-flex gap-2 flex-column flex-lg-row justify-content-start align-items-lg-center w-100">
                     <Show when={!isUndefined(window.baseDS.footer!.logo)}>
                       <Show
                         when={!isUndefined(foundationLink())}
@@ -104,6 +110,11 @@ const Footer = () => {
                               logo={window.baseDS.footer!.logo!}
                               height={34}
                             />
+                          </div>
+                        </ExternalLink>
+                        <ExternalLink href={'https://oss-compass.org'}>
+                          <div class={styles.logoWrapper}>
+                            <SVGIcon kind={SVGIconKind.OssCompass} class={`me-1 ${styles.logo}`} />
                           </div>
                         </ExternalLink>
                       </Show>
@@ -125,16 +136,13 @@ const Footer = () => {
                 OpenAtom OpenHarmony（简称“OpenHarmony”）是由开放原子开源基金会（OpenAtom
                 Foundation）孵化及运营的开源项目
               </div>
-              {/* <div class={`pt-2 ${styles.legend}`}>
+              <div class={`pt-2 ${styles.legend}`}>
                 Powered by{' '}
-                <ExternalLink
-                  class="p-0 fw-semibold text-white text-underline"
-                  href="https://github.com/cncf/landscape2"
-                >
-                  CNCF interactive landscapes generator
+                <ExternalLink class="p-0 fw-semibold text-white text-underline" href="https://oss-compass.org">
+                  Oss-Compass
                 </ExternalLink>
                 .
-              </div> */}
+              </div>
             </div>
           </div>
         </div>

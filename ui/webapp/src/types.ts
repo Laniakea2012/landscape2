@@ -32,6 +32,7 @@ export interface FooterContent {
     facebook?: string;
     flickr?: string;
     homepage?: string;
+    gitee?: string;
     github?: string;
     instagram?: string;
     linkedin?: string;

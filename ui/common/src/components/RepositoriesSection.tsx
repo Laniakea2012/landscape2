@@ -32,10 +32,9 @@ const SubtitleInSection = css`
 `;
 
 const BadgeOutlineDark = css`
-  border: 1px solid var(--bs-gray-700);
-  color: var(--bs-gray-700) !important;
+  border: 1px solid var(--color1);
+  color: var(--color1); !important;
 `;
-
 const MiniBadge = css`
   font-size: 0.65rem !important;
 `;
@@ -119,6 +118,7 @@ const RepositoryInfo = (props: RepoProps) => {
               </Show>
               <Show when={!isUndefined(props.repository.github_data)}>
                 <div class={`badge rounded-0 me-2 ${BadgeOutlineDark} ${MiniBadge}`}>
+                  {/* <SVGIcon kind={SVGIconKind.License} class={`me-1 ${License}`} /> */}
                   {props.repository.github_data!.license}
                 </div>
               </Show>
@@ -142,6 +142,22 @@ const RepositoryInfo = (props: RepoProps) => {
           </Show>
         </div>
       </div>
+      {/* <div>
+        <ExternalLink
+          class={`text-reset p-0 align-items-center fw-semibold text-decoration-none ${TruncateWrapper}`}
+          href={props.repository.url}
+          externalIconClassName={ExternalIcon}
+          visibleExternalIcon
+        >
+          <div class={`d-none d-md-flex ${LinkContentWrapper}`}>
+            <div class="text-truncate">{props.repository.url}</div>
+          </div>
+          <div class="d-flex d-md-none flex-row align-items-center text-truncate">
+            <SVGIcon kind={SVGIconKind.GitHub} class={`me-1 ${RepoIcon}`} />
+            <div class="text-truncate">{formatRepoUrl(props.repository.url)}</div>
+          </div>
+        </ExternalLink>
+      </div> */}
       <Show when={!isUndefined(props.repository.github_data)}>
         <div class="row g-4 my-0 mb-2 justify-content-center justify-md-content-start">
           <Box
