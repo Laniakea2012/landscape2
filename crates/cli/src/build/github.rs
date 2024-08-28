@@ -177,6 +177,7 @@ async fn collect_repository_data(gh: Object<DynGH>, repo_url: &str, ohpm_url: &s
         participation_stats,
         stars: gh_repo.stargazers_count,
         ohpm_downloads: ohpm_downloads,
+        ohpm_url: String::from(ohpm_url),
         topics: gh_repo.topics,
         url: gh_repo.html_url,
     })

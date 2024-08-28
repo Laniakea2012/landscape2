@@ -181,6 +181,7 @@ async fn collect_repository_data(gt: Object<DynGT>, repo_url: &str, ohpm_url: &s
         participation_stats,
         stars: gt_repo.stargazers_count,
         ohpm_downloads: ohpm_downloads,
+        ohpm_url: String::from(ohpm_url),
         topics: gt_repo.topics,
         url: gt_repo.html_url,
     })
