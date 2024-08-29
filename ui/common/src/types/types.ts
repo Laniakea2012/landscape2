@@ -127,6 +127,7 @@ export interface GithubRepository {
   participation_stats: number[];
   stars: number;
   ohpm_downloads: number;
+  ohpm_url: string;
   topics: string[];
   url: string;
 }

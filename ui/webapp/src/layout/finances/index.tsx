@@ -413,7 +413,7 @@ const Finances = () => {
 
             <div class="d-none d-lg-block ms-4">
               <div class="d-flex flex-row align-items-baseline my-2">
-                <div class={`text-uppercase text-primary fw-bold ${styles.title}`}>Order</div>
+                <div class={`text-uppercase text-primary fw-bold ${styles.title}`}>排序</div>
               </div>
 
               {orderSelect()}

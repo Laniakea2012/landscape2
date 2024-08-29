@@ -157,7 +157,7 @@ const Card = (props: Props) => {
           <Switch>
             <Match when={!isUndefined(stars())}>
               <div class="d-flex flex-row align-items-baseline">
-                <small class={`me-1 ${styles.legend}`}>GitHub stars:</small>
+                <small class={`me-1 ${styles.legend}`}>Stars:</small>
                 <div class="fw-semibold">{stars ? prettifyNumber(stars()!, 1) : '-'}</div>
               </div>
             </Match>

@@ -70,7 +70,7 @@ const FiltersInLine = (props: Props) => {
   return (
     <>
       <div class="d-flex flex-row align-items-baseline my-2">
-        <div class={`text-uppercase text-primary fw-bold ${styles.title}`}>Filters</div>
+        <div class={`text-uppercase text-primary fw-bold ${styles.title}`}>筛选</div>
       </div>
       <div class="d-flex flex-row align-items-top">
         <For each={props.filters}>

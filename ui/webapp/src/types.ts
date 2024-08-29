@@ -209,6 +209,7 @@ export interface GithubRepository {
   participation_stats: number[];
   stars: number;
   ohpm_downloads: number;
+  ohpm_url: string;
   topics: string[];
   url: string;
 }
@@ -380,6 +381,7 @@ export interface Stats {
     repositories: number;
     stars: number;
     ohpm_downloads: number;
+    ohpm_url: string;
   };
   organizations?: {
     acquisitions: { [key: string]: number };

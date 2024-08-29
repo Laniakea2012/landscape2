@@ -70,6 +70,10 @@ const TruncateWrapper = css`
 
 const LinkContentWrapper = css`
   max-width: calc(100% - 1.5rem);
+  :hover {
+    color: var(--color1);
+    text-decoration: underline;
+  }
 `;
 
 const GoodFirstBadge = css`
@@ -84,6 +88,17 @@ const Badges = css`
   row-gap: 0.5rem;
 `;
 
+const getOhUrl = (url: string): string => {
+  const regex = /detail\/(.+)/; // 匹配 detail/ 后面的所有字符
+  const match = url.match(regex);
+
+  if (match && match[1]) {
+    let url = 'https://ohpm.openharmony.cn/#/cn/detail/' + encodeURIComponent(match[1]);
+    return url; // 输出：@yunkss/eftool
+  } else {
+    return '';
+  }
+};
 const formatRepoUrl = (url: string): string => {
   const repoUrl = new URL(url);
   return repoUrl.pathname.slice(1);
@@ -104,13 +119,26 @@ const RepositoryInfo = (props: RepoProps) => {
             visibleExternalIcon
           >
             <div class={`d-none d-md-flex ${LinkContentWrapper}`}>
-              <div class="text-truncate">{props.repository.url}</div>
+              <div class="text-truncate">{props.repository.url.includes('gitee.com') ? 'Gitee' : 'Github'}</div>
             </div>
-            <div class="d-flex d-md-none flex-row align-items-center text-truncate">
+
+            {/* <div class="d-flex d-md-none flex-row align-items-center text-truncate">
               <SVGIcon kind={SVGIconKind.GitHub} class={`me-1 ${RepoIcon}`} />
               <div class="text-truncate">{formatRepoUrl(props.repository.url)}</div>
-            </div>
+            </div> */}
           </ExternalLink>
+          <Show when={props.repository.github_data && getOhUrl(props.repository.github_data!.ohpm_url)}>
+            <ExternalLink
+              class={`text-reset p-0 align-items-center fw-semibold me-3 text-decoration-none ${TruncateWrapper}`}
+              href={getOhUrl(props.repository.github_data!.ohpm_url)}
+              externalIconClassName={ExternalIcon}
+              visibleExternalIcon
+            >
+              <div class={`d-none d-md-flex ${LinkContentWrapper}`}>
+                <div class="text-truncate">{'OHPM'}</div>
+              </div>
+            </ExternalLink>
+          </Show>
           <Show when={props.repository.primary || !isUndefined(props.repository.github_data)}>
             <div class={`d-flex align-items-center flex-wrap flex-md-nowrap mt-2 mt-md-0 ${Badges}`}>
               <Show when={props.repository.primary}>
@@ -142,22 +170,21 @@ const RepositoryInfo = (props: RepoProps) => {
           </Show>
         </div>
       </div>
-      {/* <div>
+      {/* <Show when={props.repository.github_data && getOhUrl(props.repository.github_data!.ohpm_url)}>
         <ExternalLink
           class={`text-reset p-0 align-items-center fw-semibold text-decoration-none ${TruncateWrapper}`}
-          href={props.repository.url}
+          href={getOhUrl(props.repository.github_data!.ohpm_url)}
           externalIconClassName={ExternalIcon}
           visibleExternalIcon
         >
           <div class={`d-none d-md-flex ${LinkContentWrapper}`}>
-            <div class="text-truncate">{props.repository.url}</div>
+            <div class="text-truncate">{getOhUrl(props.repository.github_data!.ohpm_url)}</div>
           </div>
           <div class="d-flex d-md-none flex-row align-items-center text-truncate">
-            <SVGIcon kind={SVGIconKind.GitHub} class={`me-1 ${RepoIcon}`} />
-            <div class="text-truncate">{formatRepoUrl(props.repository.url)}</div>
+            <div class="text-truncate">{getOhUrl(props.repository.github_data!.ohpm_url)}</div>
           </div>
         </ExternalLink>
-      </div> */}
+      </Show> */}
       <Show when={!isUndefined(props.repository.github_data)}>
         <div class="row g-4 my-0 mb-2 justify-content-center justify-md-content-start">
           <Box
@@ -208,7 +235,7 @@ const RepositoryInfo = (props: RepoProps) => {
 
         <Show when={!isUndefined(props.repository.github_data!.participation_stats)}>
           <div class="mt-4">
-            <div class={`fw-semibold ${SubtitleInSection}`}>Participation stats</div>
+            <div class={`fw-semibold ${SubtitleInSection}`}>统计数据</div>
             <div class="mx-2 mx-md-0">
               <ParticipationStats initialStats={props.repository.github_data!.participation_stats} />
             </div>
@@ -221,7 +248,7 @@ const RepositoryInfo = (props: RepoProps) => {
           }
         >
           <div class="mt-4">
-            <div class={`fw-semibold ${SubtitleInSection}`}>Languages</div>
+            <div class={`fw-semibold ${SubtitleInSection}`}>编程语言</div>
             <LanguagesStats initialLanguages={props.repository.github_data!.languages!} boxClass={props.boxClass} />
           </div>
         </Show>

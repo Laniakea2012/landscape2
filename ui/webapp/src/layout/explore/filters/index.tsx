@@ -192,7 +192,7 @@ const Filters = (props: Props) => {
         modalDialogClass={styles.modal}
         header={
           <div class="d-flex flex-row align-items-baseline">
-            <div>Filters</div>
+            <div>筛选</div>
             <Show when={!isEmpty(props.initialActiveFilters())}>
               <button
                 type="button"
@@ -226,7 +226,7 @@ const Filters = (props: Props) => {
                 }}
                 aria-label="Apply filters"
               >
-                Apply
+                确认
               </button>
             </div>
           </div>
