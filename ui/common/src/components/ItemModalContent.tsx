@@ -804,8 +804,8 @@ export const ItemModalContent = (props: Props) => {
                 href={`https://compass.gitee.com/oh#${itemInfo()!.maturity!.toLowerCase() === 'graduated' ? 'graduationReportPage' : 'reportDetailPage'}?projectId=${primaryRepo()?.url}`}
               >
                 <Image
-                  name={`CLOMonitor report summary for ${itemInfo()!.name}`}
-                  logo={`https://compass.gitee.com/chart/tpc?report_type=${itemInfo()!.maturity!.toLowerCase()}&code_url=${primaryRepo()!.url!}`}
+                  // name={`CLOMonitor report summary for ${itemInfo()!.name}`}
+                  logo={`https://compass.gitee.com/chart/tpc?report_type=${itemInfo()!.maturity!.toLowerCase() === 'graduated' ? 'graduation' : 'incubating'}&code_url=${primaryRepo()!.url!}`}
                 />
               </ExternalLink>
             </div>
