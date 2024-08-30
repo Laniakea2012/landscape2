@@ -797,7 +797,7 @@ export const ItemModalContent = (props: Props) => {
           }
         >
           <div class={`position-relative border ${Fieldset}`}>
-            <div class={`position-absolute px-2 bg-white fw-semibold ${FieldsetTitle}`}>Oss-Compass report summary</div>
+            <div class={`position-absolute px-2 bg-white fw-semibold ${FieldsetTitle}`}>Oss-Compass 评估报告</div>
             <div class="my-2 d-flex justify-content-center w-100 align-items-center">
               <ExternalLink
                 // href={`https://compass.gitee.com/oh#graduationReportPage?projectId=gd230s24`}
