@@ -235,7 +235,7 @@ const RepositoryInfo = (props: RepoProps) => {
 
         <Show when={!isUndefined(props.repository.github_data!.participation_stats)}>
           <div class="mt-4">
-            <div class={`fw-semibold ${SubtitleInSection}`}>统计数据</div>
+            <div class={`fw-semibold ${SubtitleInSection}`}>Commits 统计数据</div>
             <div class="mx-2 mx-md-0">
               <ParticipationStats initialStats={props.repository.github_data!.participation_stats} />
             </div>

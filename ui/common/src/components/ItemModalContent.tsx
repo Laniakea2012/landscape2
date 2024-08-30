@@ -789,11 +789,31 @@ export const ItemModalContent = (props: Props) => {
             </div>
           </div>
         </Show>
-
-        {/* CLOMonitor */}
-        <Show when={!isUndefined(itemInfo()!.clomonitor_name) && !isUndefined(itemInfo()!.clomonitor_report_summary)}>
+        {/* <div>{itemInfo()!.summary!.intro_url!}</div> */}
+        {/* Oss-compass */}
+        <Show
+          when={
+            !isUndefined(itemInfo()!.maturity) && ['incubating', 'graduated'].includes(itemInfo()!.maturity as string)
+          }
+        >
           <div class={`position-relative border ${Fieldset}`}>
-            <div class={`position-absolute px-2 bg-white fw-semibold ${FieldsetTitle}`}>CLOMonitor report summary</div>
+            <div class={`position-absolute px-2 bg-white fw-semibold ${FieldsetTitle}`}>Oss-Compass 评估报告</div>
+            <div class="my-2 d-flex justify-content-center w-100 align-items-center">
+              <ExternalLink
+                // href={`https://compass.gitee.com/oh#graduationReportPage?projectId=gd230s24`}
+                href={`https://compass.gitee.com/oh#${itemInfo()!.maturity!.toLowerCase() === 'graduated' ? 'reportDetailPage' : 'graduationReportPage'}?projectId=${primaryRepo()?.url}`}
+              >
+                <Image
+                  name={`CLOMonitor report summary for ${itemInfo()!.name}`}
+                  logo={`https://compass.gitee.com/chart/tpc?report_type=${itemInfo()!.maturity!.toLowerCase()}&code_url=${primaryRepo()!.url!}`}
+                />
+              </ExternalLink>
+            </div>
+          </div>
+        </Show>
+        {/* <Show when={!isUndefined(itemInfo()!.clomonitor_name) && !isUndefined(itemInfo()!.clomonitor_report_summary)}>
+          <div class={`position-relative border ${Fieldset}`}>
+            <div class={`position-absolute px-2 bg-white fw-semibold ${FieldsetTitle}`}>Oss Compass report summary</div>
             <div class="my-2 d-flex justify-content-center w-100 align-items-center">
               <ExternalLink
                 href={`https://clomonitor.io/projects/${props.foundation.toLowerCase()}/${itemInfo()!
@@ -806,7 +826,7 @@ export const ItemModalContent = (props: Props) => {
               </ExternalLink>
             </div>
           </div>
-        </Show>
+        </Show> */}
       </div>
     </>
   );
