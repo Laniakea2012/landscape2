@@ -119,7 +119,12 @@ const GridItem = (props: Props) => {
       fallback={
         <div
           role="listitem"
-          style={props.item.featured && props.item.featured.label ? { border: `2px solid ${props.borderColor}` } : {}}
+          style={
+            props.item.featured &&
+            (props.item.featured.label === 'Distribution'
+              ? { border: `2px solid ${props.borderColor}` }
+              : { border: `2px solid #4c6984` })
+          }
           class={`card rounded-0 position-relative p-0 ${styles.card}`}
           classList={{
             bigCard: !isUndefined(props.item.featured),
@@ -143,7 +148,13 @@ const GridItem = (props: Props) => {
               <Show when={props.item.featured && props.item.featured.label}>
                 <div
                   class={`text-center text-uppercase text-dark position-absolute start-0 end-0 bottom-0 text-truncate px-1 ${styles.legend}`}
-                  style={props.item.featured ? { 'border-top': `2px solid ${props.borderColor}` } : {}}
+                  style={
+                    props.item.featured
+                      ? {
+                          'border-top': `2px solid ${props.item.featured.label === 'Distribution' ? props.borderColor : '#4c6984'}`,
+                        }
+                      : {}
+                  }
                 >
                   {props.item.featured!.label}
                 </div>
@@ -155,7 +166,12 @@ const GridItem = (props: Props) => {
     >
       <div
         role="listitem"
-        style={props.item.featured && props.item.featured.label ? { border: `2px solid ${props.borderColor}` } : {}}
+        style={
+          props.item.featured &&
+          (props.item.featured.label === 'Distribution'
+            ? { border: `2px solid ${props.borderColor}` }
+            : { border: `2px solid #4c6984` })
+        }
         class={`card rounded-0 position-relative p-0 ${styles.card}`}
         classList={{
           bigCard: !isUndefined(props.item.featured),
@@ -224,7 +240,13 @@ const GridItem = (props: Props) => {
             <Show when={props.item.featured && props.item.featured.label}>
               <div
                 class={`text-center text-uppercase text-dark position-absolute start-0 end-0 bottom-0 text-truncate px-1 ${styles.legend}`}
-                style={props.item.featured ? { 'border-top': `2px solid ${props.borderColor}` } : {}}
+                style={
+                  props.item.featured
+                    ? {
+                        'border-top': `2px solid ${props.item.featured.label === 'Distribution' ? props.borderColor : '#4c6984'}`,
+                      }
+                    : {}
+                }
                 aria-label={props.item.featured!.label}
               >
                 {props.item.featured!.label}
