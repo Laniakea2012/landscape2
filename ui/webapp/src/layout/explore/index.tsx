@@ -18,6 +18,7 @@ import {
   SORT_BY_PARAM,
   SORT_DIRECTION_PARAM,
   SORT_OPTION_LABEL,
+  SORT_TYPE_LABEL,
   VIEW_MODE_PARAM,
   ZOOM_LEVELS,
 } from '../../data';
@@ -826,7 +827,7 @@ const Explore = (props: Props) => {
                             {(direction: string) => {
                               return (
                                 <option value={`${opt}_${direction}`}>
-                                  {SORT_OPTION_LABEL[opt]} ({direction})
+                                  {SORT_OPTION_LABEL[opt]} ({SORT_TYPE_LABEL[direction]})
                                 </option>
                               );
                             }}
