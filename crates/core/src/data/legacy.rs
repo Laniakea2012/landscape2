@@ -160,6 +160,7 @@ pub(super) struct ItemExtra {
     pub docker_url: Option<String>,
     pub documentation_url: Option<String>,
     pub ohpm_url: Option<String>,
+    pub organization: Option<String>,
     pub github_discussions_url: Option<String>,
     pub gitter_url: Option<String>,
     pub graduated: Option<NaiveDate>,
