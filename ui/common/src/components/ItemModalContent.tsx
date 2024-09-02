@@ -268,10 +268,11 @@ export const ItemModalContent = (props: Props) => {
             <div class="d-flex flex-row align-items-center me-5">
               <div class={`fw-semibold text-truncate pe-2 ${Title}`}>{itemInfo()!.name}</div>
               <div class="d-flex flex-row align-items-center ms-2">
+                <Show when={!isUndefined(itemInfo()!.organization)}>
+                  <FoundationBadge foundation={itemInfo()!.organization!} />
+                </Show>
                 <Show when={!isUndefined(itemInfo()!.maturity)}>
-                  <FoundationBadge foundation={props.foundation} />
                   <MaturityBadge level={itemInfo()!.maturity!} class="mx-2" />
-
                   <Show when={!isUndefined(itemInfo()!.tag)}>
                     <div class={`badge text-uppercase rounded-0 me-2 ${BadgeOutlineDark} ${TagBadge}`}>
                       TAG {formatTAGName(itemInfo()!.tag!)}
