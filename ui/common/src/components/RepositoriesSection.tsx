@@ -190,8 +190,8 @@ const RepositoryInfo = (props: RepoProps) => {
           <Box
             class={props.boxClass}
             value={prettifyNumber(props.repository.github_data!.ohpm_downloads, 1)}
-            legend="Ohpm Downloads"
-            description="Ohpm Downloads"
+            legend="OHPM Downloads"
+            description="OHPM Downloads"
           />
           <Box
             class={props.boxClass}

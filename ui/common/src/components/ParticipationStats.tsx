@@ -59,7 +59,7 @@ export const ParticipationStats = (props: Props) => {
       [...Array(5).keys()].map((n: number) => {
         return moment()
           .subtract(n * 3, 'months')
-          .format("MMM 'YY");
+          .format('YYYY-MM');
       })
     );
   });
