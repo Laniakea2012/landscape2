@@ -109,7 +109,7 @@ const RepositoryInfo = (props: RepoProps) => {
     return moment(date).format('MMM D');
   };
   const formatDateAll = (date: string): string => {
-    return moment(date).format("MMM D 'YY");
+    return moment(date).format("MMM D 'YYYY");
   };
   return (
     <>
