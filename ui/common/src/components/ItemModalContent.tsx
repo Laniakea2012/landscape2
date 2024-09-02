@@ -268,10 +268,11 @@ export const ItemModalContent = (props: Props) => {
             <div class="d-flex flex-row align-items-center me-5">
               <div class={`fw-semibold text-truncate pe-2 ${Title}`}>{itemInfo()!.name}</div>
               <div class="d-flex flex-row align-items-center ms-2">
+                <Show when={!isUndefined(itemInfo()!.organization)}>
+                  <FoundationBadge foundation={itemInfo()!.organization!} />
+                </Show>
                 <Show when={!isUndefined(itemInfo()!.maturity)}>
-                  <FoundationBadge foundation={props.foundation} />
                   <MaturityBadge level={itemInfo()!.maturity!} class="mx-2" />
-
                   <Show when={!isUndefined(itemInfo()!.tag)}>
                     <div class={`badge text-uppercase rounded-0 me-2 ${BadgeOutlineDark} ${TagBadge}`}>
                       TAG {formatTAGName(itemInfo()!.tag!)}
@@ -797,7 +798,7 @@ export const ItemModalContent = (props: Props) => {
           }
         >
           <div class={`position-relative border ${Fieldset}`}>
-            <div class={`position-absolute px-2 bg-white fw-semibold ${FieldsetTitle}`}>Oss-Compass 评估报告</div>
+            <div class={`position-absolute px-2 bg-white fw-semibold ${FieldsetTitle}`}>OSS Compass 评估报告</div>
             <div class="my-2 d-flex justify-content-center w-100 align-items-center">
               <ExternalLink
                 // href={`https://compass.gitee.com/oh#graduationReportPage?projectId=gd230s24`}
@@ -813,7 +814,7 @@ export const ItemModalContent = (props: Props) => {
         </Show>
         {/* <Show when={!isUndefined(itemInfo()!.clomonitor_name) && !isUndefined(itemInfo()!.clomonitor_report_summary)}>
           <div class={`position-relative border ${Fieldset}`}>
-            <div class={`position-absolute px-2 bg-white fw-semibold ${FieldsetTitle}`}>Oss Compass report summary</div>
+            <div class={`position-absolute px-2 bg-white fw-semibold ${FieldsetTitle}`}>OSS Compass report summary</div>
             <div class="my-2 d-flex justify-content-center w-100 align-items-center">
               <ExternalLink
                 href={`https://clomonitor.io/projects/${props.foundation.toLowerCase()}/${itemInfo()!

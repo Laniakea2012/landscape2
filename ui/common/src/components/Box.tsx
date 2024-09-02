@@ -10,6 +10,7 @@ interface Props {
 }
 
 const Highlighted = css`
+  cursor: pointer;
   background-color: var(--bs-gray-100);
   border: 6px solid var(--bs-gray-300);
 
@@ -19,8 +20,8 @@ const Highlighted = css`
     bottom: 0;
     left: 0;
     right: 0;
-    background-color: var(--bs-black);
-    opacity: 0.03;
+    background-color: var(--color-stats-1);
+    opacity: 0.2;
     z-index: 0;
   }
 `;
@@ -65,7 +66,7 @@ export const Box = (props: Props) => {
         </style>
       </Show>
 
-      <div class={props.class || 'col'} aria-description={props.description}>
+      <div class={props.class || 'col'} aria-description={props.description} title={props.description}>
         <div
           class={`position-relative text-center p-2 p-md-3 h-100 d-flex flex-column justify-content-center filledBox ${Highlighted}`}
           classList={{ [`filledBox filledBox-${randomId}`]: fillPercentage() > 0 }}

@@ -44,6 +44,7 @@ export interface Item extends BaseItem {
   latest_annual_review_at?: string;
   latest_annual_review_url?: string;
   openssf_best_practices_url?: string;
+  organization?: string;
   repositories?: Repository[];
   slack_url?: string;
   specification?: boolean;

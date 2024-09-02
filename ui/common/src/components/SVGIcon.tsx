@@ -567,7 +567,7 @@ const OssCompass = (props: IconProps) => (
 );
 const Gitee = (props: IconProps) => (
   <svg class={props.class} viewBox="0 0 32 32" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg">
-    <title>Gitee icon</title>
+    <title>Gitee repo</title>
     <g fill="none" fill-rule="evenodd">
       <circle cx="16" cy="16" fill="#c71d23" r="16"></circle>
       <path
@@ -1242,7 +1242,7 @@ const World = (props: IconProps) => (
     width="1em"
     xmlns="http://www.w3.org/2000/svg"
   >
-    <title>World icon</title>
+    <title>Website</title>
     <path
       fill="none"
       stroke-miterlimit="10"

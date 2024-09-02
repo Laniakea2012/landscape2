@@ -106,7 +106,10 @@ const formatRepoUrl = (url: string): string => {
 
 const RepositoryInfo = (props: RepoProps) => {
   const formatDate = (date: string): string => {
-    return moment(date).format("MMM 'YY");
+    return moment(date).format('MMM D');
+  };
+  const formatDateAll = (date: string): string => {
+    return moment(date).format("MMM D 'YYYY");
   };
   return (
     <>
@@ -190,36 +193,40 @@ const RepositoryInfo = (props: RepoProps) => {
           <Box
             class={props.boxClass}
             value={prettifyNumber(props.repository.github_data!.ohpm_downloads, 1)}
-            legend="Ohpm Downloads"
-            description="Ohpm Downloads"
+            legend="OHPM Downloads"
+            description="OHPM 总下载量"
           />
           <Box
             class={props.boxClass}
             value={prettifyNumber(props.repository.github_data!.stars, 1)}
             legend="Stars"
-            description="Stars number"
+            description="仓库 Star 数量"
           />
 
           <Box
             class={props.boxClass}
             value={prettifyNumber(props.repository.github_data!.contributors.count)}
             legend="Contributors"
-            description="Contributors number"
+            description="贡献者数量"
           />
 
           <Box
             class={props.boxClass}
             value={formatDate(props.repository.github_data!.first_commit.ts)}
             legend="First commit"
-            description="First commit date"
+            description={`第一次代码提交时间 ${
+              !isUndefined(props.repository.github_data!.latest_release)
+                ? formatDateAll(props.repository.github_data!.first_commit!.ts)
+                : ''
+            }`}
           />
 
-          <Box
+          {/* <Box
             class={props.boxClass}
             value={formatDate(props.repository.github_data!.latest_commit.ts)}
             legend="Latest commit"
             description="Latest commit date"
-          />
+          /> */}
 
           <Box
             class={props.boxClass}
@@ -229,7 +236,11 @@ const RepositoryInfo = (props: RepoProps) => {
                 : '-'
             }
             legend="Latest release"
-            description="Latest release date"
+            description={`最近一次版本发布时间 ${
+              !isUndefined(props.repository.github_data!.latest_release)
+                ? formatDateAll(props.repository.github_data!.latest_release!.ts)
+                : ''
+            }`}
           />
         </div>
 

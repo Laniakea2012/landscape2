@@ -218,7 +218,10 @@ export const SORT_OPTION_LABEL = {
   [SortOption.LatestCommit]: 'Latest commit',
   [SortOption.Funding]: 'Funding',
 };
-
+export const SORT_TYPE_LABEL: { [key: string]: string } = {
+  asc: '升序',
+  desc: '降序',
+};
 interface SettingsValue {
   foundationName: string;
   gridSize: GridItemsSize;
