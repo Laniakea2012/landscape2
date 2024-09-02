@@ -158,6 +158,9 @@ categories:
                 # OHPM URL (optional).
                 ohpm_url: https://ohpm.url
 
+                # organization (optional).
+                organization: OpenHarmony
+
                 # GitHub discussions URL (optional).
                 github_discussions_url: https://github.discussions.url
 
