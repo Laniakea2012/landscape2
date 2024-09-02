@@ -228,6 +228,7 @@ trait GT {
 /// GT implementation backed by the Gitee API.
 struct GTApi {
     http_client: reqwest::Client,
+    gitee_token: String
 }
 
 // #[derive(Serialize, Deserialize)]
@@ -291,6 +292,7 @@ impl GTApi {
 
         Ok(Self {
             http_client,
+            gitee_token: token.to_string()
         })
     }
 }
@@ -301,7 +303,8 @@ impl GT for GTApi {
     #[instrument(skip(self), err)]
     async fn get_contributors_count(&self, owner: &str, repo: &str) -> Result<usize> {
         let url = format!("{GITEE_API_URL}/repos/{owner}/{repo}/contributors?type=authors");
-        let response = self.http_client.get(url).send().await?;
+        let token_url = add_access_token_to_url(&url, &self.gitee_token);
+        let response = self.http_client.get(token_url).send().await?;
 
         if !response.status().is_success() {
             return Err(format_err!("https://gitee.com/{}/{} get_contributors_count failed!", owner, repo));
@@ -318,7 +321,8 @@ impl GT for GTApi {
     #[instrument(skip(self), err)]
     async fn get_ohpm_downloads(&self, owner: &str, repo: &str, ohpm_url: &str) -> Result<i64> {
         let url = format!("{ohpm_url}");
-        let response = self.http_client.get(url).send().await?;
+        let token_url = add_access_token_to_url(&url, &self.gitee_token);
+        let response = self.http_client.get(token_url).send().await?;
 
         if !response.status().is_success() {
             return Err(format_err!("https://gitee.com/{}/{} get_ohpm_downloads failed!", owner, repo));
@@ -335,7 +339,8 @@ impl GT for GTApi {
     #[instrument(skip(self), err)]
     async fn get_license(&self, owner: &str, repo: &str) -> Result<String> {
         let url = format!("{GITEE_API_URL}/repos/{owner}/{repo}/license");
-        let response = self.http_client.get(url).send().await?;
+        let token_url = add_access_token_to_url(&url, &self.gitee_token);
+        let response = self.http_client.get(token_url).send().await?;
 
         if !response.status().is_success() {
             return Err(format_err!("https://gitee.com/{}/{} get_license failed!", owner, repo));
@@ -354,11 +359,13 @@ impl GT for GTApi {
     async fn get_first_commit(&self, owner: &str, repo: &str, ref_: &str) -> Result<Option<Commit>> {
         // Get last commits page
         let url = format!("{GITEE_API_URL}/repos/{owner}/{repo}/commits?sha={ref_}&per_page=1&page=1");
-        let head_response = self.http_client.head(url).send().await?;
+        let token_url = add_access_token_to_url(&url, &self.gitee_token);
+        let head_response = self.http_client.head(token_url).send().await?;
         let last_page = get_last_page(head_response.headers())?.unwrap_or(1);
 
         let last_page_url = format!("{GITEE_API_URL}/repos/{owner}/{repo}/commits?sha={ref_}&per_page=1&page={last_page}");
-        let response = self.http_client.get(last_page_url).send().await?;
+        let last_page_token_url = add_access_token_to_url(&last_page_url, &self.gitee_token);
+        let response = self.http_client.get(last_page_token_url).send().await?;
         if !response.status().is_success() {
             return Err(format_err!("https://gitee.com/{}/{} get_first_commit failed!", owner, repo));
         }
@@ -445,10 +452,11 @@ impl GT for GTApi {
     #[instrument(skip(self), err)]
     async fn get_latest_commit(&self, owner: &str, repo: &str, ref_: &str) -> Result<Commit> {
         let url = format!("{GITEE_API_URL}/repos/{owner}/{repo}/commits?sha={ref_}&per_page=1&page=1");
-        let response = self.http_client.get(url).send().await?;
+        let token_url = add_access_token_to_url(&url, &self.gitee_token);
+        let response = self.http_client.get(token_url).send().await?;
 
         if !response.status().is_success() {
-            return Err(format_err!("https://gitee.com/{}/{} get_first_commit failed!", owner, repo));
+            return Err(format_err!("https://gitee.com/{}/{} get_latest_commit failed!", owner, repo));
         }
 
         let body_text: String = response.text().await?;
@@ -465,7 +473,8 @@ impl GT for GTApi {
     #[instrument(skip(self), err)]
     async fn get_latest_release(&self, owner: &str, repo: &str) -> Result<Option<Release>> {
         let url = format!("{GITEE_API_URL}/repos/{owner}/{repo}/releases?per_page=1&page=1&direction=desc");
-        let response = self.http_client.get(url).send().await?;
+        let token_url = add_access_token_to_url(&url, &self.gitee_token);
+        let response = self.http_client.get(token_url).send().await?;
 
         if !response.status().is_success() {
             return Err(format_err!("https://gitee.com/{}/{} get_latest_release failed!", owner, repo));
@@ -489,7 +498,8 @@ impl GT for GTApi {
         let mut week_commit_count: [i64; 52] = [0; 52];
         loop {
             let url = format!("{GITEE_API_URL}/repos/{owner}/{repo}/commits?per_page=100&page={page}&since={begin_date}");
-            let response = self.http_client.get(url).send().await?;
+            let token_url = add_access_token_to_url(&url, &self.gitee_token);
+            let response = self.http_client.get(token_url).send().await?;
 
             if !response.status().is_success() {
                 return Err(format_err!("https://gitee.com/{}/{} get_first_commit failed!", owner, repo));
@@ -527,7 +537,8 @@ impl GT for GTApi {
     #[instrument(skip(self), err)]
     async fn get_repository(&self, owner: &str, repo: &str) -> Result<PartRepository> {
         let url = format!("{GITEE_API_URL}/repos/{owner}/{repo}");
-        let response = self.http_client.get(url).send().await?;
+        let token_url = add_access_token_to_url(&url, &self.gitee_token);
+        let response = self.http_client.get(token_url).send().await?;
 
         if !response.status().is_success() {
             return Err(format_err!("https://gitee.com/{}/{} get_repository failed!", owner, repo));
@@ -629,4 +640,12 @@ fn get_default_branch(repo_path: &str) -> Option<String> {
     }
 
     None
+}
+
+fn add_access_token_to_url(url: &str, access_token: &str) -> String {
+    if url.contains('?') {
+        format!("{}&access_token={}", url, access_token)
+    } else {
+        format!("{}?access_token={}", url, access_token)
+    }
 }
