@@ -124,8 +124,16 @@ export const ZOOM_LEVELS_PER_SIZE: ZoomLevelsPerSize = {
 
 export let ZOOM_LEVELS = ZOOM_LEVELS_PER_SIZE[GRID_SIZE as GridItemsSize];
 
-export const COLORS: string[] = ['var(--color5)', 'var(--color6)'];
-
+// export const COLORS: string[] = ['var(--color5)', '#00bcd4', 'var(--color6)'];
+export const COLORS: string[] = [
+  'rgba(0, 155, 232, 0.55)',
+  '#73c8f2',
+  // 'rgba(0, 155, 232, 0.75)',
+  // 'rgba(0, 188, 212, 0.75)',
+  // 'rgba(0, 150, 136, 0.65)',
+  // 'rgba(82, 196, 26, 0.65)',
+];
+// const COLORSN: string[] = ['#6aaebc'];
 export const COMMON_FILTERS: FilterSection[] = [
   {
     value: FilterCategory.License,

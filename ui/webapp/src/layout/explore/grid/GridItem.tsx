@@ -122,8 +122,8 @@ const GridItem = (props: Props) => {
           style={
             props.item.featured &&
             (props.item.featured.label === 'Distribution'
-              ? { border: `2px solid ${props.borderColor}` }
-              : { border: `2px solid #4c6984` })
+              ? { border: `2px solid #0969da` }
+              : { border: `2px solid rgba(0, 0, 0, 0.175)` })
           }
           class={`card rounded-0 position-relative p-0 ${styles.card}`}
           classList={{
@@ -151,7 +151,8 @@ const GridItem = (props: Props) => {
                   style={
                     props.item.featured
                       ? {
-                          'border-top': `2px solid ${props.item.featured.label === 'Distribution' ? props.borderColor : '#4c6984'}`,
+                          'background-color': props.item.featured.label === 'Distribution' ? '#dee6ed' : '',
+                          'border-top': `2px solid ${props.item.featured.label === 'Distribution' ? '#0969da' : 'rgba(0, 0, 0, 0.175)'}`,
                         }
                       : {}
                   }

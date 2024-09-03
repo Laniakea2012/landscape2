@@ -49,9 +49,19 @@ const Category = (props: CatProps) => {
 
   return (
     <Show when={!isUndefined(subcategories()) && subcategories()!.length > 0}>
+      {/* <Show when={props.categoryName === '媒体'}>
+        <div class={`mt-1 ${styles.divider}`}>
+          <div class={styles.dividerText}>北向</div>
+        </div>
+      </Show> */}
+      {/* <Show when={props.categoryName === '网络协议'}>
+        <div class={styles.divider2}>
+          <div class={styles.dividerText}>南向</div>
+        </div>
+      </Show> */}
       <div class="d-flex flex-row">
         <div
-          class={`text-white border border-3 border-white fw-medium d-flex flex-row align-items-center justify-content-start ${styles.catTitle}`}
+          class={`text-white border border-3 border-white fw-medium d-flex flex-row align-items-center justify-content-center ${styles.catTitle}`}
           classList={{
             'border-top-0': props.index !== 0,
             'border-bottom-0': props.index === props.catSectionNumber,
@@ -80,7 +90,9 @@ const GridCategory = (props: Props) => {
   const [colorsList, setColorsList] = createSignal<string[]>([]);
   const [firstLoad, setFirstLoad] = createSignal<boolean>(false);
   const [isVisible, setIsVisible] = createSignal<boolean>(false);
-  const [catWithItems, setCatWithItems] = createSignal<string[]>([]);
+  // const [catWithItems, setCatWithItems] = createSignal<string[]>([]);
+  const [catWithNorthItems, setCatWithNorthItems] = createSignal<string[]>([]);
+  const [catWithSouthItems, setCatWithSouthItems] = createSignal<string[]>([]);
   const data = () => props.data;
 
   createEffect(() => {
@@ -96,29 +108,69 @@ const GridCategory = (props: Props) => {
     on(data, () => {
       if (!isUndefined(data())) {
         setColorsList(generateColorsArray(Object.keys(data()).length));
-        setCatWithItems(getCategoriesWithItems(data()));
+        const allItem = getCategoriesWithItems(data());
+        // setCatWithItems(getCategoriesWithItems(data()));
+        setCatWithNorthItems(allItem.filter((cat) => !cat.includes('南向')));
+        setCatWithSouthItems(allItem.filter((cat) => cat.includes('南向')));
       }
     })
   );
 
   return (
     <Show when={firstLoad()}>
-      <For each={catWithItems()}>
-        {(cat, index) => {
-          const isOverriden = !isUndefined(props.categories_overridden) && props.categories_overridden.includes(cat);
-
-          return (
-            <Category
-              index={index()}
-              isOverriden={isOverriden}
-              categoryName={cat}
-              bgColor={[...colorsList()][index()]}
-              catSectionNumber={Object.keys(data()).length - 1}
-              content={data()[cat]}
-            />
-          );
-        }}
-      </For>
+      <div class="d-flex w-100">
+        <div class={styles.dividerMain}>
+          <For each={catWithNorthItems()}>
+            {(cat, index) => {
+              const isOverriden =
+                !isUndefined(props.categories_overridden) && props.categories_overridden.includes(cat);
+              return (
+                <Category
+                  index={index()}
+                  isOverriden={isOverriden}
+                  categoryName={cat}
+                  bgColor={[...colorsList()][index()]}
+                  catSectionNumber={Object.keys(data()).length - 1}
+                  content={data()[cat]}
+                />
+              );
+            }}
+          </For>
+        </div>
+        <div
+          class={`text-white border border-3 border-white fw-medium d-flex flex-row align-items-center ${styles.dividerType}`}
+        >
+          北向三方库及跨平台框架
+        </div>
+      </div>
+      <Show when={catWithSouthItems()?.length > 0}>
+        <div class="d-flex w-100">
+          <div class={styles.dividerMain}>
+            <For each={catWithSouthItems()}>
+              {(cat, index) => {
+                const isOverriden =
+                  !isUndefined(props.categories_overridden) && props.categories_overridden.includes(cat);
+                return (
+                  <Category
+                    index={index()}
+                    isOverriden={isOverriden}
+                    categoryName={cat}
+                    bgColor={['#59bab1', '#59bab1'][index()]}
+                    catSectionNumber={Object.keys(data()).length - 1}
+                    content={data()[cat]}
+                  />
+                );
+              }}
+            </For>
+          </div>
+          <div
+            style={{ 'background-color': '#59bab1' }}
+            class={`text-white border border-3 border-white fw-medium d-flex flex-row align-items-center ${styles.dividerType}`}
+          >
+            <div class="text-center _catTitleText_2r7l7_87">南向三方库</div>
+          </div>
+        </div>
+      </Show>
     </Show>
   );
 };
