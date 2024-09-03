@@ -112,11 +112,11 @@ const Footer = () => {
                             />
                           </div>
                         </ExternalLink>
-                        <ExternalLink href={'https://oss-compass.org'}>
+                        {/* <ExternalLink href={'https://oss-compass.org'}>
                           <div class={styles.logoWrapper}>
                             <SVGIcon kind={SVGIconKind.OssCompass} class={`me-1 ${styles.logo}`} />
                           </div>
-                        </ExternalLink>
+                        </ExternalLink> */}
                       </Show>
                     </Show>
                     <div class="ms-lg-auto mt-3 mt-lg-0 mw-100">{renderSocialNetworkLinks()}</div>
@@ -136,13 +136,13 @@ const Footer = () => {
                 OpenAtom OpenHarmony（简称“OpenHarmony”）是由开放原子开源基金会（OpenAtom
                 Foundation）孵化及运营的开源项目
               </div>
-              <div class={`pt-2 ${styles.legend}`}>
+              {/* <div class={`pt-2 ${styles.legend}`}>
                 Powered by{' '}
                 <ExternalLink class="p-0 fw-semibold text-white text-underline" href="https://oss-compass.org">
                   Oss-Compass
                 </ExternalLink>
                 .
-              </div>
+              </div> */}
             </div>
           </div>
         </div>

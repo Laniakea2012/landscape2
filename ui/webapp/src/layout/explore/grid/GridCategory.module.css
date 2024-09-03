@@ -1,10 +1,52 @@
+.dividerType {
+  background-color: #73c8f2;
+  writing-mode: vertical-rl;
+  text-orientation: upright;
+  /* transform: rotate(180deg); */
+  width: 2.8rem;
+  font-size: 0.9rem;
+  line-height: 0.9rem;
+  padding: 1rem 0rem;
+  display: flex;
+  justify-content: center;
+}
+.dividerMain {
+  flex: 1;
+}
+.divider {
+  /* box-sizing: content-box; */
+  display: block;
+  height: 1px;
+  width: calc(100% - 7px);
+  margin: 26px 4px;
+  border-top: 1px solid var(--color5);
+}
+.divider2 {
+  display: block;
+  height: 1px;
+  width: calc(100% - 7px);
+  margin: 26px 4px;
+  border-top: 1px solid var(--color6);
+}
+.dividerText {
+  position: absolute;
+  background-color: #fff;
+  padding: 0 12px;
+  font-weight: 600;
+  font-size: 0.8rem;
+  line-height: 0.8rem;
+  color: rgba(0, 0, 0, 0.75);
+
+  left: 44px;
+  transform: translateY(-50%);
+}
 .catTitle {
   writing-mode: vertical-rl;
   text-orientation: upright;
   /* transform: rotate(180deg); */
   width: 3rem;
-  font-size: 0.7rem;
-  line-height: 0.95rem;
+  font-size: 0.9rem;
+  line-height: 0.9rem;
   padding: 1rem 0rem;
 }
 
