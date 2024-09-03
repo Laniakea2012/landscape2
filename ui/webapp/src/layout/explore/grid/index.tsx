@@ -110,8 +110,8 @@ const GridCategory = (props: Props) => {
         setColorsList(generateColorsArray(Object.keys(data()).length));
         const allItem = getCategoriesWithItems(data());
         // setCatWithItems(getCategoriesWithItems(data()));
-        setCatWithNorthItems(allItem.filter((cat) => !cat.includes('南向')));
-        setCatWithSouthItems(allItem.filter((cat) => cat.includes('南向')));
+        setCatWithNorthItems(allItem.filter((cat) => !cat.includes('数学库')));
+        setCatWithSouthItems(allItem.filter((cat) => cat.includes('数学库')));
       }
     })
   );
