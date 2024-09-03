@@ -385,10 +385,6 @@ impl GT for GTApi {
     /// [GT::get_languages]
     #[instrument(skip(self), err)]
     async fn get_languages(&self, owner: &str, repo: &str) -> Result<Option<BTreeMap<String, i64>>> {
-        let mut languages = BTreeMap::new();
-        return Ok(Some(languages));
-
-
         let url = format!("https://gitee.com/{}/{}", owner, repo);
         let repo_dir = format!("./repos/{}/{}", owner, repo);
         let repo_path = Path::new(&repo_dir);
