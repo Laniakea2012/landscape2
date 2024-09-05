@@ -15,7 +15,7 @@ lazy_static! {
     static ref MULTIPLE_HYPHENS: Regex = Regex::new(r"-{2,}").expect("exprs in MULTIPLE_HYPHENS to be valid");
 
     /// Characters allowed in normalized names.
-    static ref VALID_CHARS: Regex = Regex::new(r"[a-z0-9\-\ \+]").expect("exprs in VALID_CHARS to be valid");
+    static ref VALID_CHARS: Regex = Regex::new(r"[a-z0-9\-\ \+\u4e00-\u9fff]").expect("exprs in VALID_CHARS to be valid");
 }
 
 /// Normalize category, subcategory and item name.
