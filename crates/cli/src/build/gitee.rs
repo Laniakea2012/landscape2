@@ -392,27 +392,17 @@ impl GT for GTApi {
         let repository = match Repository::open_ext(repo_path, RepositoryOpenFlags::empty(), Vec::<&str>::new()) {
             Ok(repo) => {
                 println!("Repository exists. Pulling changes...");
+                //TODO: optimize the implement below, can reference to "git pull" example in git2-rs repo
+                // https://github.com/rust-lang/git2-rs/blob/dc63db55c5d605e6ac0516d48c3fff4e34b709f8/examples/pull.rs
+                // Fetch remote commits
                 let mut remote = repo.find_remote("origin").unwrap_or_else(|e| panic!("failed to find remote: {}", e));
                 remote.fetch::<String>(&[], None, None).unwrap_or_else(|e| panic!("fetch failed: {}", e));
-                // Merge a remote branch into the local repository.
+                // Merge remote commits into the local repository like "git reset --hard origin/master" 
                 let default_branch = get_default_branch(&repo_dir).unwrap();
                 let refname = format!("refs/remotes/{}/{}", "origin", &default_branch);
-                let obj = repo.revparse_single(&refname).unwrap_or_else(|e| panic!("failed to revparse: {}", e));
-                let obj_id = obj.id();
-                let reference = repo.find_reference(&refname).unwrap_or_else(|e| panic!("failed to find reference: {}", e));
-
-                // Create a checkout builder and perform merge operation.
-                let mut checkout_builder = CheckoutBuilder::new();
-                repo.checkout_tree(&obj, Some(&mut checkout_builder)).unwrap_or_else(|e| panic!("checkout failed: {}", e));
-
-                // Update HEAD to the latest commit.
-                repo.set_head(&refname).unwrap_or_else(|e| panic!("failed to set HEAD: {}", e));
-
-                // Complete merger
-                match repo.merge_base(reference.target().unwrap(), obj_id) {
-                    Ok(_) => println!("Merge successful"),
-                    Err(e) => panic!("merge failed: {}", e),
-                };
+                let oid = repo.refname_to_id(&refname)?;
+                let object = repo.find_object(oid, None).unwrap();
+                repo.reset(&object, git2::ResetType::Hard, None)?;
             },
             Err(_) => {
                 println!("Repository does not exist. Cloning repository...");
