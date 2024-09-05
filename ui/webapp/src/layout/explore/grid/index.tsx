@@ -119,6 +119,11 @@ const GridCategory = (props: Props) => {
   return (
     <Show when={firstLoad()}>
       <div class="d-flex w-100">
+        <div
+          class={`text-white border border-3 border-white fw-medium d-flex flex-row align-items-center ${styles.dividerType}`}
+        >
+          北向三方库及跨平台框架
+        </div>
         <div class={styles.dividerMain}>
           <For each={catWithNorthItems()}>
             {(cat, index) => {
@@ -137,14 +142,15 @@ const GridCategory = (props: Props) => {
             }}
           </For>
         </div>
-        <div
-          class={`text-white border border-3 border-white fw-medium d-flex flex-row align-items-center ${styles.dividerType}`}
-        >
-          北向三方库及跨平台框架
-        </div>
       </div>
       <Show when={catWithSouthItems()?.length > 0}>
         <div class="d-flex w-100">
+          <div
+            style={{ 'background-color': '#59bab1' }}
+            class={`text-white border border-3 border-white fw-medium d-flex flex-row align-items-center ${styles.dividerType}`}
+          >
+            <div class="text-center _catTitleText_2r7l7_87">南向三方库</div>
+          </div>
           <div class={styles.dividerMain}>
             <For each={catWithSouthItems()}>
               {(cat, index) => {
@@ -162,12 +168,6 @@ const GridCategory = (props: Props) => {
                 );
               }}
             </For>
-          </div>
-          <div
-            style={{ 'background-color': '#59bab1' }}
-            class={`text-white border border-3 border-white fw-medium d-flex flex-row align-items-center ${styles.dividerType}`}
-          >
-            <div class="text-center _catTitleText_2r7l7_87">南向三方库</div>
           </div>
         </div>
       </Show>
