@@ -75,9 +75,9 @@ const Menu = (props: Props) => {
                             title={subtitle}
                             class={`position-relative btn btn-sm btn-link rounded-0 p-0 ps-3 pe-2 py-1 text-start text-truncate text-capitalize ${styles.subcategoryBtn}`}
                             classList={{
-                              [`fw-bold ${styles.selected}`]: `#${hash}` === location.hash,
+                              [`fw-bold ${styles.selected}`]: `#${hash}` === decodeURIComponent(location.hash),
                             }}
-                            disabled={`#${hash}` === location.hash}
+                            disabled={`#${hash}` === decodeURIComponent(location.hash)}
                             onClick={() => {
                               goToElement(`card_${hash}`);
                               if (!isUndefined(props.onClickOption)) {
@@ -87,7 +87,7 @@ const Menu = (props: Props) => {
                             }}
                             aria-label={subtitle === 'undefined' ? 'None' : subtitle}
                           >
-                            <Show when={`#${hash}` === location.hash}>
+                            <Show when={`#${hash}` === decodeURIComponent(location.hash)}>
                               <div class={`position-absolute ${styles.arrow}`}>
                                 <SVGIcon kind={SVGIconKind.ArrowRight} />
                               </div>
