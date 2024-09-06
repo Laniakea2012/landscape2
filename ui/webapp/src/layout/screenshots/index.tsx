@@ -44,13 +44,98 @@ const Screenshots = (props: Props) => {
               const colorsList = () => generateColorsArray(group.categories.length);
               const groupData = groupsData()![group.normalized_name];
               const categories = getCategoriesWithItems(groupData);
+              const catWithNorthItems = categories.filter((cat) => !cat.includes('数学库'));
+              const catWithSouthItems = categories.filter((cat) => cat.includes('数学库'));
 
               return (
                 <div class={styles.group}>
                   <Show when={!isUndefined(activeGroups)}>
                     <div class={`fw-bold text-uppercase ${styles.title}`}>{group.name}</div>
                   </Show>
-                  <For each={categories}>
+                  <Show when={catWithNorthItems?.length > 0}>
+                    <div class="d-flex w-100">
+                      <div
+                        class={`text-white border border-3 border-white fw-medium d-flex flex-row align-items-center ${styles.dividerType}`}
+                      >
+                        北向三方库及跨平台框架
+                      </div>
+                      <div class={styles.dividerMain}>
+                        <For each={catWithNorthItems}>
+                          {(cat, index) => {
+                            const isOverriden =
+                              !isUndefined(props.initialData.categories_overridden) &&
+                              props.initialData.categories_overridden.includes(cat);
+                            const subcategories: SubcategoryDetails[] = [];
+                            Object.keys(groupData![cat]).forEach((subcat: string) => {
+                              if (groupData![cat][subcat].items.length !== 0) {
+                                subcategories.push({
+                                  name: subcat,
+                                  itemsCount: groupData![cat][subcat].itemsCount,
+                                  itemsFeaturedCount: groupData![cat][subcat].itemsFeaturedCount,
+                                });
+                              }
+                            });
+                            const catData = groupData[cat];
+                            const bgColor = () => colorsList()[index()];
+
+                            return (
+                              <Grid
+                                categoryName={cat}
+                                index={index()}
+                                bgColor={bgColor()}
+                                isOverriden={isOverriden}
+                                subcategories={subcategories}
+                                categoryData={catData}
+                              />
+                            );
+                          }}
+                        </For>
+                      </div>
+                    </div>
+                  </Show>
+                  <Show when={catWithSouthItems?.length > 0}>
+                    <div class="d-flex w-100">
+                      <div
+                        class={`text-white border border-3 border-white fw-medium d-flex flex-row align-items-center ${styles.dividerType}`}
+                      >
+                        南向三方库
+                      </div>
+                      <div class={styles.dividerMain}>
+                        <For each={catWithSouthItems}>
+                          {(cat, index) => {
+                            const isOverriden =
+                              !isUndefined(props.initialData.categories_overridden) &&
+                              props.initialData.categories_overridden.includes(cat);
+                            const subcategories: SubcategoryDetails[] = [];
+                            Object.keys(groupData![cat]).forEach((subcat: string) => {
+                              if (groupData![cat][subcat].items.length !== 0) {
+                                subcategories.push({
+                                  name: subcat,
+                                  itemsCount: groupData![cat][subcat].itemsCount,
+                                  itemsFeaturedCount: groupData![cat][subcat].itemsFeaturedCount,
+                                });
+                              }
+                            });
+                            const catData = groupData[cat];
+                            const bgColor = () => colorsList()[index()];
+
+                            return (
+                              <Grid
+                                categoryName={cat}
+                                index={index()}
+                                bgColor={bgColor()}
+                                isOverriden={isOverriden}
+                                subcategories={subcategories}
+                                categoryData={catData}
+                              />
+                            );
+                          }}
+                        </For>
+                      </div>
+                    </div>
+                  </Show>
+
+                  {/* <For each={categories}>
                     {(cat, index) => {
                       const isOverriden =
                         !isUndefined(props.initialData.categories_overridden) &&
@@ -79,7 +164,7 @@ const Screenshots = (props: Props) => {
                         />
                       );
                     }}
-                  </For>
+                  </For> */}
                 </div>
               );
             }}

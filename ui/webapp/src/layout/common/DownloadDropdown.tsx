@@ -217,7 +217,7 @@ const DownloadDropdown = () => {
               </div>
             </button>
           </li>
-          <li>
+          {/* <li>
             <button
               class="dropdown-item py-3 border-top"
               onClick={(e) => {
@@ -247,7 +247,7 @@ const DownloadDropdown = () => {
                 </div>
               </div>
             </button>
-          </li>
+          </li> */}
         </ul>
       </div>
     </div>

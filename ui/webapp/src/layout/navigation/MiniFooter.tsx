@@ -16,11 +16,13 @@ const MiniFooter = () => {
                 <div class={`pb-2 ${styles.legend}`} innerHTML={window.baseDS.footer!.text} />
               </Show>
               <div class={styles.legend}>
-                Powered by{' '}
+                OpenAtom OpenHarmony（简称“OpenHarmony”）是由开放原子开源基金会（OpenAtom
+                Foundation）孵化及运营的开源项目
+                {/* Powered by{' '}
                 <ExternalLink class="p-0 fw-semibold text-white text-underline" href="https://oss-compass.org">
                   Oss-Compass
                 </ExternalLink>
-                .
+                . */}
               </div>
             </div>
           </div>
