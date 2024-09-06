@@ -211,13 +211,13 @@ const DownloadDropdown = () => {
                 <div class={styles.contentBtn}>
                   <div class="fw-semibold mb-2">items.csv</div>
                   <div class={`text-wrap text-muted fst-italic ${styles.legend}`}>
-                    包含 landscape 中所有可用项目信息的 CSV 文件
+                    包含 landscape 中所有项目信息的 CSV 文件
                   </div>
                 </div>
               </div>
             </button>
           </li>
-          {/* <li>
+          <li>
             <button
               class="dropdown-item py-3 border-top"
               onClick={(e) => {
@@ -242,12 +242,13 @@ const DownloadDropdown = () => {
                 <div class={styles.contentBtn}>
                   <div class="fw-semibold mb-2">projects.csv</div>
                   <div class={`text-wrap text-muted fst-italic ${styles.legend}`}>
-                    包含基金会所有项目信息的 CSV 文件
+                    CSV file that contains information about all the projects that are part of the foundation
+                    {/* 包含基金会所有项目信息的 CSV 文件 */}
                   </div>
                 </div>
               </div>
             </button>
-          </li> */}
+          </li>
         </ul>
       </div>
     </div>
