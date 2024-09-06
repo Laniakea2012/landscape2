@@ -1,4 +1,3 @@
-import { ExternalLink } from 'common';
 import isUndefined from 'lodash/isUndefined';
 import { Show } from 'solid-js';
 
