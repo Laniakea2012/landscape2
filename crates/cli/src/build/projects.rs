@@ -20,8 +20,7 @@ pub(crate) struct Project {
     pub maturity: String,
     pub name: String,
     pub num_security_audits: String,
-    pub sandbox_at: String,
-    pub tag: String,
+    pub sandbox_at: String
 }
 
 /// Collect projects from the landscape data.
@@ -40,8 +39,10 @@ pub(crate) fn collect_projects(landscape_data: &LandscapeData) -> Vec<Project> {
         .cloned()
         .filter_map(|item| {
             // Prepare maturity and tag
-            let maturity = item.maturity?;
-            let tag = item.tag?;
+            let maturity = match item.maturity {
+                Some(maturity) if maturity == "distribution" => maturity,
+                Some(_) | None => return None,
+            };
 
             // Prepare sandbox date
             let sandbox_at = if item.accepted_at == item.incubating_at {
@@ -66,7 +67,6 @@ pub(crate) fn collect_projects(landscape_data: &LandscapeData) -> Vec<Project> {
                 num_security_audits: num_security_audits.unwrap_or_default().to_string(),
                 last_security_audit: fmt_date(&last_security_audit),
                 sandbox_at: fmt_date(&sandbox_at),
-                tag: tag.to_string(),
             };
             Some(project)
         })
@@ -91,7 +91,6 @@ pub(crate) fn generate_projects_csv(mut w: csv::Writer<File>, projects: &[Projec
     w.write_record([
         "project_name",
         "maturity",
-        "tag",
         "accepted_date",
         "sandbox_date",
         "incubating_date",
@@ -106,7 +105,6 @@ pub(crate) fn generate_projects_csv(mut w: csv::Writer<File>, projects: &[Projec
         w.write_record([
             &p.name,
             &p.maturity,
-            &p.tag,
             &p.accepted_at,
             &p.sandbox_at,
             &p.incubating_at,
