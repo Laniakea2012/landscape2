@@ -1,7 +1,7 @@
 //! This module defines some types used to parse the landscape data file in
 //! legacy format and convert it to the new one.
 
-use super::{ItemAudit, ItemLink};
+use super::{ItemAudit, ItemLink, ItemVersion};
 use crate::util::validate_url;
 use anyhow::{bail, format_err, Context, Result};
 use chrono::NaiveDate;
@@ -168,6 +168,7 @@ pub(super) struct ItemExtra {
     pub linkedin_url: Option<String>,
     pub mailing_list_url: Option<String>,
     pub other_links: Option<Vec<ItemLink>>,
+    pub versions: Option<Vec<ItemVersion>>,
     pub package_manager_url: Option<String>,
     pub parent_project: Option<String>,
     pub slack_url: Option<String>,
@@ -289,6 +290,10 @@ mod tests {
                         other_links: Some(vec![ItemLink {
                             name: "link".to_string(),
                             url: "https://link.url".to_string(),
+                        }]),
+                        versions: Some(vec![ItemVersion {
+                            distribution_version: "distribution_version".to_string(),
+                            software_version: "software_version".to_string(),
                         }]),
                         ..Default::default()
                     }),
@@ -419,6 +424,10 @@ mod tests {
                         other_links: Some(vec![ItemLink {
                             name: String::new(),
                             url: "https://link.url".to_string(),
+                        }]),
+                        versions: Some(vec![ItemVersion {
+                            distribution_version: "distribution_version".to_string(),
+                            software_version: "software_version".to_string(),
                         }]),
                         ..Default::default()
                     }),

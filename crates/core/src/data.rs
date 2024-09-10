@@ -436,6 +436,7 @@ impl From<legacy::LandscapeData> for LandscapeData {
                         item.linkedin_url = extra.linkedin_url;
                         item.mailing_list_url = extra.mailing_list_url;
                         item.other_links = extra.other_links;
+                        item.versions = extra.versions;
                         item.package_manager_url = extra.package_manager_url;
                         item.parent_project = extra.parent_project;
                         item.slack_url = extra.slack_url;
@@ -633,6 +634,9 @@ pub struct Item {
     pub other_links: Option<Vec<ItemLink>>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
+    pub versions: Option<Vec<ItemVersion>>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub package_manager_url: Option<String>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -810,6 +814,12 @@ pub struct ItemLink {
     pub url: String,
 }
 
+#[derive(Debug, Clone, Default, PartialEq, Serialize, Deserialize)]
+pub struct ItemVersion {
+    pub distribution_version: String,
+    pub software_version: String,
+}
+
 /// Landscape item summary.
 #[derive(Debug, Clone, Default, PartialEq, Serialize, Deserialize)]
 pub struct ItemSummary {
@@ -934,6 +944,8 @@ pub struct RepositoryGithubData {
     pub organization: String,
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub topics: Vec<String>,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub versions: Vec<ItemVersion>,
     pub url: String,
 
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -1399,6 +1411,10 @@ mod tests {
                                 name: "name".to_string(),
                                 url: "https://link.url".to_string(),
                             }]),
+                            versions: Some(vec![ItemVersion {
+                                distribution_version: "distribution_version".to_string(),
+                                software_version: "software_version".to_string(),
+                            }]),
                             package_manager_url: Some("package_manager_url".to_string()),
                             parent_project: Some("parent_project".to_string()),
                             slack_url: Some("slack_url".to_string()),
@@ -1489,6 +1505,10 @@ mod tests {
                 other_links: Some(vec![ItemLink {
                     name: "name".to_string(),
                     url: "https://link.url".to_string(),
+                }]),
+                versions: Some(vec![ItemVersion {
+                    distribution_version: "distribution_version".to_string(),
+                    software_version: "software_version".to_string(),
                 }]),
                 package_manager_url: Some("package_manager_url".to_string()),
                 parent_project: Some("parent_project".to_string()),

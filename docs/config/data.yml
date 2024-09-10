@@ -193,6 +193,11 @@ categories:
                 #     url: https://link.url
                 other_links: []
 
+                # versions:
+                #     distribution_version: distribution_version
+                #     software_version: software_version
+                versions: []
+
                 # Package manager URL (optional). Link to the package manager where the item is
                 # available.
                 package_manager_url: https://package.manager.url/my-item

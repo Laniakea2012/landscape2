@@ -8,7 +8,7 @@ use async_trait::async_trait;
 use chrono::{DateTime, Utc, Duration};
 use deadpool::unmanaged::{Object, Pool};
 use futures::stream::{self, StreamExt};
-use landscape2_core::data::{Commit, Contributors, GithubData, Release, RepositoryGithubData};
+use landscape2_core::data::{Commit, Contributors, GithubData, ItemVersion, Release, RepositoryGithubData};
 use lazy_static::lazy_static;
 #[cfg(test)]
 use mockall::automock;
@@ -77,6 +77,7 @@ pub(crate) async fn collect_gitee_data(cache: &Cache, landscape_data: &Landscape
     let mut urls = vec![];
     let mut ohpm_url_hash = HashMap::<String, String>::new();
     let mut organization_hash = HashMap::<String, String>::new();
+    let mut versions_hash = HashMap::<String, Vec<ItemVersion>>::new();
     for item in &landscape_data.items {
         if let Some(repositories) = &item.repositories {
             for repo in repositories {
@@ -87,6 +88,9 @@ pub(crate) async fn collect_gitee_data(cache: &Cache, landscape_data: &Landscape
                     }
                     if let Some(organization) = &item.organization {
                         organization_hash.insert(repo.url.clone(), organization.clone());
+                    }
+                    if let Some(versions) = &item.versions {
+                        versions_hash.insert(repo.url.clone(), versions.clone());
                     }
                 }
             }
@@ -122,7 +126,8 @@ pub(crate) async fn collect_gitee_data(cache: &Cache, landscape_data: &Landscape
                 let gt = gt_pool.get().await.expect("token -when available-");
                 let organization = organization_hash.get(&url).map(|s| s.as_str()).unwrap_or_default();
                 let ohpm_url = ohpm_url_hash.get(&url).map(|s| s.as_str()).unwrap_or_default();
-                let result = collect_repository_data(gt, &url, ohpm_url, organization).await;
+                let versions = versions_hash.get(&url).map(|s| s.clone()).unwrap_or_default();
+                let result = collect_repository_data(gt, &url, ohpm_url, organization, versions).await;
                 (url.clone(), result)
             } else {
                 (url.clone(), Err(format_err!("no tokens provided")))
@@ -150,7 +155,9 @@ pub(crate) async fn collect_gitee_data(cache: &Cache, landscape_data: &Landscape
 
 /// Collect repository data from Gitee.
 #[instrument(skip_all, err)]
-async fn collect_repository_data(gt: Object<DynGT>, repo_url: &str, ohpm_url: &str, organization: &str) -> Result<RepositoryGiteeData> {
+async fn collect_repository_data(gt: Object<DynGT>, repo_url: &str, ohpm_url: &str,
+                                 organization: &str, versions: Vec<ItemVersion>)
+    -> Result<RepositoryGiteeData> {
     // Collect some information from Gitee
     let (owner, repo) = get_owner_and_repo(repo_url)?;
     let gt_repo = gt.get_repository(&owner, &repo).await?;
@@ -185,6 +192,7 @@ async fn collect_repository_data(gt: Object<DynGT>, repo_url: &str, ohpm_url: &s
         ohpm_url: String::from(ohpm_url),
         organization: String::from(organization),
         topics: gt_repo.topics,
+        versions: versions,
         url: gt_repo.html_url,
     })
 }
