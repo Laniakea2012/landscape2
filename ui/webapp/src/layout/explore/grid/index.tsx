@@ -134,7 +134,7 @@ const GridCategory = (props: Props) => {
                   index={index()}
                   isOverriden={isOverriden}
                   categoryName={cat}
-                  bgColor={[...colorsList()][index()]}
+                  bgColor={[...colorsList()][0]}
                   catSectionNumber={Object.keys(data()).length - 1}
                   content={data()[cat]}
                 />
@@ -146,7 +146,7 @@ const GridCategory = (props: Props) => {
       <Show when={catWithSouthItems()?.length > 0}>
         <div class="d-flex w-100">
           <div
-            style={{ 'background-color': '#59bab1' }}
+            style={{ 'background-color': '#69c0b8' }}
             class={`text-white border border-3 border-white fw-medium d-flex flex-row align-items-center ${styles.dividerType}`}
           >
             <div class="text-center _catTitleText_2r7l7_87">南向三方库</div>
@@ -161,7 +161,7 @@ const GridCategory = (props: Props) => {
                     index={index()}
                     isOverriden={isOverriden}
                     categoryName={cat}
-                    bgColor={['#59bab1', '#59bab1'][index()]}
+                    bgColor={[...colorsList()][1]}
                     catSectionNumber={Object.keys(data()).length - 1}
                     content={data()[cat]}
                   />
