@@ -812,7 +812,7 @@ export const ItemModalContent = (props: Props) => {
             !isUndefined(itemInfo()!.maturity) && ['incubating', 'graduated'].includes(itemInfo()!.maturity as string)
           }
         >
-          <div class={`position-relative border ${Fieldset}`}>
+          <div class={`position-relative d-none border ${Fieldset}`}>
             <div class={`position-absolute px-2 bg-white fw-semibold ${FieldsetTitle}`}>开源社区评估报告</div>
             <div class="my-2 d-flex justify-content-center w-100 align-items-center">
               <ExternalLink
@@ -843,7 +843,7 @@ export const ItemModalContent = (props: Props) => {
             </div>
           </div>
         </Show> */}
-        <div class={`pt-2 ${compass}`}>
+        <div class={`pt-2 d-none ${compass}`}>
           <div>Powered by </div>
           <ExternalLink href={'https://oss-compass.org'}>
             {/* <SVGIcon kind={SVGIconKind.OssCompass} class={`me-1 ${compassLogo}`} /> */}
