@@ -8,7 +8,7 @@ use async_trait::async_trait;
 use chrono::{DateTime, Utc};
 use deadpool::unmanaged::{Object, Pool};
 use futures::stream::{self, StreamExt};
-use landscape2_core::data::{Commit, Contributors, GithubData, Release, RepositoryGithubData};
+use landscape2_core::data::{Commit, Contributors, GithubData, ItemVersion, Release, RepositoryGithubData};
 use lazy_static::lazy_static;
 #[cfg(test)]
 use mockall::automock;
@@ -68,6 +68,7 @@ pub(crate) async fn collect_github_data(cache: &Cache, landscape_data: &Landscap
     let mut urls = vec![];
     let mut ohpm_url_hash = HashMap::<String, String>::new();
     let mut organization_hash = HashMap::<String, String>::new();
+    let mut versions_hash = HashMap::<String, Vec<ItemVersion>>::new();
     for item in &landscape_data.items {
         if let Some(repositories) = &item.repositories {
             for repo in repositories {
@@ -78,6 +79,9 @@ pub(crate) async fn collect_github_data(cache: &Cache, landscape_data: &Landscap
                     }
                     if let Some(organization) = &item.organization {
                         organization_hash.insert(repo.url.clone(), organization.clone());
+                    }
+                    if let Some(versions) = &item.versions {
+                        versions_hash.insert(repo.url.clone(), versions.clone());
                     }
                 }
             }
@@ -113,7 +117,8 @@ pub(crate) async fn collect_github_data(cache: &Cache, landscape_data: &Landscap
                 let gh = gh_pool.get().await.expect("token -when available-");
                 let organization = organization_hash.get(&url).map(|s| s.as_str()).unwrap_or_default();
                 let ohpm_url = ohpm_url_hash.get(&url).map(|s| s.as_str()).unwrap_or_default();
-                let result = collect_repository_data(gh, &url, ohpm_url, organization).await;
+                let versions = versions_hash.get(&url).map(|s| s.clone()).unwrap_or_default();
+                let result = collect_repository_data(gh, &url, ohpm_url, organization, versions).await;
                 (url.clone(), result)
             } else {
                 (url.clone(), Err(format_err!("no tokens provided")))
@@ -141,7 +146,9 @@ pub(crate) async fn collect_github_data(cache: &Cache, landscape_data: &Landscap
 
 /// Collect repository data from GitHub.
 #[instrument(skip_all, err)]
-async fn collect_repository_data(gh: Object<DynGH>, repo_url: &str, ohpm_url: &str, organization: &str) -> Result<RepositoryGithubData> {
+async fn collect_repository_data(gh: Object<DynGH>, repo_url: &str, ohpm_url: &str,
+                                 organization: &str, versions: Vec<ItemVersion>)
+    -> Result<RepositoryGithubData> {
     // Collect some information from GitHub
     let (owner, repo) = get_owner_and_repo(repo_url)?;
     let gh_repo = gh.get_repository(&owner, &repo).await?;
@@ -181,6 +188,7 @@ async fn collect_repository_data(gh: Object<DynGH>, repo_url: &str, ohpm_url: &s
         ohpm_url: String::from(ohpm_url),
         organization: String::from(organization),
         topics: gh_repo.topics,
+        versions: versions,
         url: gh_repo.html_url,
     })
 }
