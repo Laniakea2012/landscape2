@@ -91,7 +91,7 @@ impl LandscapeGuide {
         guide.validate().context("the landscape guide file provided is not valid")?;
 
         // Convert content fields from markdown to HTML
-        let options = markdown::Options::default();
+        let options = markdown::Options::gfm();
         if let Some(categories) = guide.categories.as_mut() {
             for c in &mut *categories {
                 if let Some(content) = &c.content {
