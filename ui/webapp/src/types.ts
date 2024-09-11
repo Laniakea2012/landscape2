@@ -213,6 +213,7 @@ export interface GithubRepository {
   ohpm_url: string;
   topics: string[];
   url: string;
+  versions: { [key: string]: string }[];
 }
 
 export interface Contributors {
@@ -383,6 +384,7 @@ export interface Stats {
     stars: number;
     ohpm_downloads: number;
     ohpm_url: string;
+    versions: { [key: string]: string }[];
   };
   organizations?: {
     acquisitions: { [key: string]: number };

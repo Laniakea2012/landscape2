@@ -5,14 +5,13 @@ import moment from 'moment';
 import { createSignal, For, onMount, Show } from 'solid-js';
 import { css } from 'solid-styled-components';
 
-import { Repository, SVGIconKind } from '../types/types';
+import { Repository } from '../types/types';
 import { prettifyNumber } from '../utils/prettifyNumber';
 import { isGitee } from '../utils';
 import { Box } from './Box';
 import { ExternalLink } from './ExternalLink';
 import { LanguagesStats } from './LanguagesStats';
 import { ParticipationStats } from './ParticipationStats';
-import { SVGIcon } from './SVGIcon';
 
 interface Props {
   repositories?: Repository[];
@@ -55,9 +54,9 @@ const ExternalIcon = css`
   min-width: 24px;
 `;
 
-const RepoIcon = css`
-  min-width: 24px;
-`;
+// const RepoIcon = css`
+//   min-width: 24px;
+// `;
 
 const LinkWrapper = css`
   max-width: 100%;
@@ -173,21 +172,6 @@ const RepositoryInfo = (props: RepoProps) => {
           </Show>
         </div>
       </div>
-      {/* <Show when={props.repository.github_data && getOhUrl(props.repository.github_data!.ohpm_url)}>
-        <ExternalLink
-          class={`text-reset p-0 align-items-center fw-semibold text-decoration-none ${TruncateWrapper}`}
-          href={getOhUrl(props.repository.github_data!.ohpm_url)}
-          externalIconClassName={ExternalIcon}
-          visibleExternalIcon
-        >
-          <div class={`d-none d-md-flex ${LinkContentWrapper}`}>
-            <div class="text-truncate">{getOhUrl(props.repository.github_data!.ohpm_url)}</div>
-          </div>
-          <div class="d-flex d-md-none flex-row align-items-center text-truncate">
-            <div class="text-truncate">{getOhUrl(props.repository.github_data!.ohpm_url)}</div>
-          </div>
-        </ExternalLink>
-      </Show> */}
       <Show when={!isUndefined(props.repository.github_data)}>
         <div class="row g-4 my-0 mb-2 justify-content-center justify-md-content-start">
           <Box

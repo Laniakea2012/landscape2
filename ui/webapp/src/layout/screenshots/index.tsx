@@ -76,7 +76,7 @@ const Screenshots = (props: Props) => {
                               }
                             });
                             const catData = groupData[cat];
-                            const bgColor = () => colorsList()[index()];
+                            const bgColor = () => [...colorsList()][0];
 
                             return (
                               <Grid
@@ -96,6 +96,7 @@ const Screenshots = (props: Props) => {
                   <Show when={catWithSouthItems?.length > 0}>
                     <div class="d-flex w-100">
                       <div
+                        style={{ 'background-color': '#69c0b8' }}
                         class={`text-white border border-3 border-white fw-medium d-flex flex-row align-items-center ${styles.dividerType}`}
                       >
                         南向三方库
@@ -117,7 +118,7 @@ const Screenshots = (props: Props) => {
                               }
                             });
                             const catData = groupData[cat];
-                            const bgColor = () => colorsList()[index()];
+                            const bgColor = () => [...colorsList()][1];
 
                             return (
                               <Grid

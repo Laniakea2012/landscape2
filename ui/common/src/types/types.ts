@@ -57,6 +57,7 @@ export interface Item extends BaseItem {
   audits?: SecurityAudit[];
   parent_project?: string;
   other_links?: OtherLink[];
+  versions?: { [key: string]: string }[];
 }
 
 export interface ItemSummary {
@@ -131,6 +132,7 @@ export interface GithubRepository {
   ohpm_url: string;
   topics: string[];
   url: string;
+  versions: { [key: string]: string }[];
 }
 
 export interface Contributors {
