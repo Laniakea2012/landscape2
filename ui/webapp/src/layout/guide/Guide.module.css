@@ -2,6 +2,7 @@ table {
   font-family: arial, sans-serif;
   border-collapse: collapse;
   width: 100%;
+  max-width: 600px;
 }
 thead {
   background-color: #f8f9fa;
@@ -10,7 +11,7 @@ thead {
 td,
 th {
   border: 1px solid #dddddd;
-  text-align: left;
+  text-align: center;
   padding: 8px 12px;
 }
 
