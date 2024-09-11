@@ -79,9 +79,9 @@ const TitleInSection = css`
   opacity: 0.5;
 `;
 
-const Name = css`
-  padding-bottom: 5px;
-`;
+// const Name = css`
+//   padding-bottom: 5px;
+// `;
 
 const Description = css`
   font-size: 0.9rem !important;
@@ -287,7 +287,12 @@ export const ItemModalContent = (props: Props) => {
                   <FoundationBadge foundation={itemInfo()!.organization!} />
                 </Show>
                 <Show when={!isUndefined(itemInfo()!.maturity)}>
-                  <MaturityBadge level={itemInfo()!.maturity!} class="mx-2" />
+                  <MaturityBadge
+                    level={itemInfo()!.maturity!}
+                    showTable={itemInfo()!.maturity === 'distribution'}
+                    versions={itemInfo()!.versions || []}
+                    class="mx-2"
+                  />
                   <Show when={!isUndefined(itemInfo()!.tag)}>
                     <div class={`badge text-uppercase rounded-0 me-2 ${BadgeOutlineDark} ${TagBadge}`}>
                       TAG {formatTAGName(itemInfo()!.tag!)}
@@ -319,11 +324,11 @@ export const ItemModalContent = (props: Props) => {
                 </Show>
               </div>
             </div>
-            <Show when={!isUndefined(itemInfo()!.crunchbase_data) && itemInfo()!.crunchbase_data!.name}>
+            {/* <Show when={!isUndefined(itemInfo()!.crunchbase_data) && itemInfo()!.crunchbase_data!.name}>
               <div class={`text-muted text-truncate ${Name}`}>
                 <small>{itemInfo()!.crunchbase_data!.name}</small>
               </div>
-            </Show>
+            </Show> */}
             <div class="d-flex flex-row align-items-center mb-1">
               <div class={`d-none d-xl-flex badge rounded-0 ${BadgeOutlineDark}`}>{itemInfo()!.category}</div>
               <div class={`badge ms-0 ms-xl-2 rounded-0 ${BadgeOutlineDark}`}>{itemInfo()!.subcategory}</div>
