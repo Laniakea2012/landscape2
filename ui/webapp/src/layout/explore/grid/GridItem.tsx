@@ -1,4 +1,4 @@
-import { getItemDescription, Image, Loading } from 'common';
+import { getItemDescription, Image, ImageName, Loading } from 'common';
 import isUndefined from 'lodash/isUndefined';
 import { createEffect, createSignal, on, onCleanup, Show } from 'solid-js';
 
@@ -143,7 +143,12 @@ const GridItem = (props: Props) => {
               class={`btn border-0 w-100 h-100 d-flex flex-row align-items-center ${styles.cardContent}`}
               classList={{ noCursor: !props.activeDropdown && !props.showMoreInfo }}
             >
-              <Image name={props.item.name} class={`m-auto ${styles.logo}`} logo={props.item.logo} />
+              <ImageName
+                bigCard={!isUndefined(props.item.featured)}
+                name={props.item.name}
+                class={`m-auto ${styles.logo}`}
+                logo={props.item.logo}
+              />
 
               <Show when={props.item.featured && props.item.featured.label}>
                 <div
