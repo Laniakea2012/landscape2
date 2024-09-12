@@ -9,6 +9,7 @@ const Wrapper = css`
   justify-content: center;
   align-items: center;
   position: relative;
+  background-color: rgba(240, 161, 69, 0.1) !important;
   // &[data-text]::after {
   //   content: attr(data-text);
   //   color: #48aedd;
