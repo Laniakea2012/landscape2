@@ -3,6 +3,7 @@ export { CodeBlock } from './components/CodeBlock';
 export { ExternalLink } from './components/ExternalLink';
 export { FoundationBadge } from './components/FoundationBadge';
 export { Image } from './components/Image';
+export { ImageName } from './components/ImageName';
 export { ItemModalContent } from './components/ItemModalContent';
 export { ItemModalMobileContent } from './components/ItemModalMobileContent';
 export { Loading } from './components/Loading';

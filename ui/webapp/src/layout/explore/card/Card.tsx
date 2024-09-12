@@ -4,7 +4,8 @@ import {
   formatTAGName,
   FoundationBadge,
   getItemDescription,
-  Image,
+  // Image,
+  ImageName,
   MaturityBadge,
   prettifyNumber,
   SVGIcon,
@@ -52,12 +53,19 @@ const Card = (props: Props) => {
     <div class={`d-flex flex-column ${props.class}`}>
       <div class="d-flex flex-row align-items-center">
         <div class={`d-flex align-items-center justify-content-center ${styles.logoWrapper}`}>
-          <Image
+          {/* <Image
             name={props.item.name}
             class={`m-auto ${styles.logo} ${props.logoClass}`}
             logo={props.item.logo}
             enableLazyLoad
             ariaHidden={true}
+          /> */}
+          <ImageName
+            ariaHidden={true}
+            bigCard={false}
+            name={props.item.name}
+            class={`m-auto ${styles.logo}`}
+            logo={props.item.logo}
           />
         </div>
 

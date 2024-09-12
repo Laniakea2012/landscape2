@@ -8,7 +8,7 @@
 }
 
 .cardContent {
-  padding: 0.2rem;
+  padding: 0rem;
   vertical-align: top;
 }
 
@@ -20,11 +20,11 @@
 }
 
 .card:global(.bigCard) .cardContent {
-  padding: 0.5rem;
+  padding: 0rem;
 }
 
 .card:global(.bigCard.withLabel) .cardContent {
-  padding-bottom: 1.5rem;
+  padding-bottom: 1rem;
 }
 
 .cardContent:global(.noCursor) {
