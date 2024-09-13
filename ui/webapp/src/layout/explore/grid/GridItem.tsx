@@ -236,13 +236,18 @@ const GridItem = (props: Props) => {
             aria-label={`${props.item.name} info`}
             aria-expanded={visibleDropdown()}
           >
-            <Image
+            {/* <Image
               name={props.item.name}
               class={`m-auto ${styles.logo}`}
               logo={props.item.logo}
               enableLazyLoad={!isUndefined(props.enableLazyLoad) ? props.enableLazyLoad : true}
+            /> */}
+            <ImageName
+              bigCard={!isUndefined(props.item.featured)}
+              name={props.item.name}
+              class={`m-auto ${styles.logo}`}
+              logo={props.item.logo}
             />
-
             <Show when={props.item.featured && props.item.featured.label}>
               <div
                 class={`text-center text-uppercase text-dark position-absolute start-0 end-0 bottom-0 text-truncate px-1 ${styles.legend}`}
