@@ -1,4 +1,4 @@
-import { getItemDescription, Image, ImageName, Loading } from 'common';
+import { getItemDescription, ImageName, Loading } from 'common';
 import isUndefined from 'lodash/isUndefined';
 import { createEffect, createSignal, on, onCleanup, Show } from 'solid-js';
 
