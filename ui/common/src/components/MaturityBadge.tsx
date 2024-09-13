@@ -54,7 +54,8 @@ const TableContent = css`
   }
 `;
 const AuditsCol = css`
-  width: 120px;
+  width: 220px;
+  overflow: hidden;
 `;
 export const MaturityBadge = (props: Props) => {
   const [ref, setRef] = createSignal<HTMLDivElement>();
