@@ -60,6 +60,9 @@ pub struct LandscapeSettings {
     pub base_path: Option<String>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
+    pub distribution_version: Option<String>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub categories: Option<Vec<Category>>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
