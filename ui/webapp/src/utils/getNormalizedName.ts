@@ -9,7 +9,7 @@ interface Name {
 }
 
 const REGEX = /\//g;
-const REGEX_1 = /[^\w\s-]/g;
+const REGEX_1 = /[^\w\s\u4e00-\u9fa5-]/g;
 const REGEX_2 = /[\s_-]+/g;
 const REGEX_3 = /^-+|-+$/g;
 

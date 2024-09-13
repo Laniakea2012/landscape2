@@ -30,7 +30,7 @@ const ToCOption = (props: OptionProps) => {
         }`}
         classList={{
           ['fw-semibold text-muted']: props.level === 0,
-          [styles.active]: location.hash === `#${props.option.id}`,
+          [styles.active]: decodeURIComponent(location.hash) === `#${props.option.id}`,
         }}
         onClick={() => {
           props.updateActiveTitle(props.option.id);
