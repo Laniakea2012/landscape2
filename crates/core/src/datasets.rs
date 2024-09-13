@@ -83,6 +83,9 @@ pub mod base {
         #[serde(skip_serializing_if = "Option::is_none")]
         pub base_path: Option<String>,
 
+        #[serde(skip_serializing_if = "Option::is_none")]
+        pub distribution_version: Option<String>,
+
         #[serde(default, skip_serializing_if = "Vec::is_empty")]
         pub categories: Vec<Category>,
 
@@ -141,6 +144,7 @@ pub mod base {
                 foundation: settings.foundation.clone(),
                 qr_code: qr_code.to_string(),
                 base_path: settings.base_path.clone(),
+                distribution_version: settings.distribution_version.clone(),
                 categories: landscape_data.categories.clone(),
                 categories_overridden: vec![],
                 colors: settings.colors.clone(),
@@ -542,6 +546,7 @@ mod tests {
         let settings = LandscapeSettings {
             foundation: "Foundation".to_string(),
             base_path: Some("/base/path".to_string()),
+            distribution_version: Some("distribution_version".to_string()),
             categories: Some(vec![settings::Category {
                 name: "Category 1".to_string(),
                 subcategories: vec!["Subcategory 1".to_string()],
@@ -584,6 +589,7 @@ mod tests {
             foundation: "Foundation".to_string(),
             qr_code: "QR_CODE".to_string(),
             base_path: Some("/base/path".to_string()),
+            distribution_version: Some("distribution_version".to_string()),
             categories: vec![data::Category {
                 name: "Category 1".to_string(),
                 normalized_name: "category-1".to_string(),
