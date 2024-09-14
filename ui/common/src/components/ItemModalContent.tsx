@@ -19,13 +19,14 @@ import { ExternalLink } from './ExternalLink';
 import { FoundationBadge } from './FoundationBadge';
 import { FundingRoundsTable } from './FundingRoundsTable';
 import { Image } from './Image';
-import { ImageName } from './ImageName';
+// import { ImageName } from './ImageName';
 import { ItemDropdown } from './ItemDropdown';
 import { MaturityBadge } from './MaturityBadge';
 import { MaturitySection } from './MaturitySection';
 import { ParentProject } from './ParentProject';
 import { RepositoriesSection } from './RepositoriesSection';
 import { SVGIcon } from './SVGIcon';
+import { MyTable } from './MyTable';
 
 interface Props {
   item?: Item | null;
@@ -229,7 +230,7 @@ export const ItemModalContent = (props: Props) => {
   const itemInfo = () => props.item;
   const [description, setDescription] = createSignal<string>();
   const [primaryRepo, setPrimaryRepo] = createSignal<Repository>();
-
+  const distribution_version = () => window.baseDS?.distribution_version || undefined;
   createEffect(
     on(itemInfo, () => {
       if (!isUndefined(itemInfo()) && !isNull(itemInfo())) {
@@ -277,8 +278,8 @@ export const ItemModalContent = (props: Props) => {
       <div class="d-flex flex-column p-3">
         <div class="d-flex flex-row align-items-center">
           <div class={`d-flex align-items-center justify-content-center ${LogoWrapper}`}>
-            {/* <Image class={`m-auto ${Logo}`} logo={itemInfo()!.logo} /> */}
-            <ImageName bigCard={true} name={itemInfo()!.name} class={`m-auto ${Logo}`} logo={itemInfo()!.logo} />
+            <Image class={`m-auto ${Logo}`} logo={itemInfo()!.logo} />
+            {/* <ImageName bigCard={true} name={itemInfo()!.name} class={`m-auto ${Logo}`} logo={itemInfo()!.logo} /> */}
           </div>
 
           <div class={`d-flex flex-column justify-content-between ms-3 ${ItemInfo}`}>
@@ -521,12 +522,25 @@ export const ItemModalContent = (props: Props) => {
         </Show>
         {/* Maturity */}
         <MaturitySection item={itemInfo()!} class={Fieldset} />
+        {/* 发行版 */}
+        <Show when={!isUndefined(itemInfo()!.versions) && itemInfo()!.maturity === 'distribution'}>
+          <div class={`position-relative border ${Fieldset}`}>
+            <div class={`position-absolute px-2 bg-white fw-semibold ${FieldsetTitle}`}>发行版</div>
+            <div class={`fw-semibold text-truncate fs-6 mx-2`}>当前发行版：{distribution_version()}</div>
+            <MyTable
+              tableData={itemInfo()!.versions}
+              tableThead={['发行版版本', '软件版本']}
+              tableKey={['distribution_version', 'software_version']}
+            />
+          </div>
+        </Show>
         {/* Repositories */}
         <RepositoriesSection
           repositories={itemInfo()!.repositories}
           class={`border ${Fieldset}`}
           titleClass={`position-absolute px-2 bg-white fw-semibold ${FieldsetTitle}`}
         />
+
         {/* Security audits */}
         <Show when={!isUndefined(itemInfo()!.audits) && !isEmpty(itemInfo()!.audits)}>
           <div class={`position-relative border ${Fieldset}`}>
