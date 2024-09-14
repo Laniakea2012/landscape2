@@ -26,6 +26,7 @@ import { MaturitySection } from './MaturitySection';
 import { ParentProject } from './ParentProject';
 import { RepositoriesSection } from './RepositoriesSection';
 import { SVGIcon } from './SVGIcon';
+import { MyTable } from './MyTable';
 
 interface Props {
   item?: Item | null;
@@ -229,7 +230,7 @@ export const ItemModalContent = (props: Props) => {
   const itemInfo = () => props.item;
   const [description, setDescription] = createSignal<string>();
   const [primaryRepo, setPrimaryRepo] = createSignal<Repository>();
-
+  const distribution_version = () => window.baseDS?.distribution_version || undefined;
   createEffect(
     on(itemInfo, () => {
       if (!isUndefined(itemInfo()) && !isNull(itemInfo())) {
@@ -521,12 +522,25 @@ export const ItemModalContent = (props: Props) => {
         </Show>
         {/* Maturity */}
         <MaturitySection item={itemInfo()!} class={Fieldset} />
+        {/* 发行版 */}
+        <Show when={!isUndefined(itemInfo()!.versions) && itemInfo()!.maturity === 'distribution'}>
+          <div class={`position-relative border ${Fieldset}`}>
+            <div class={`position-absolute px-2 bg-white fw-semibold ${FieldsetTitle}`}>发行版</div>
+            <div class={`fw-semibold text-truncate fs-6 mx-2`}>当前发行版：{distribution_version()}</div>
+            <MyTable
+              tableData={itemInfo()!.versions}
+              tableThead={['发行版版本', '软件版本']}
+              tableKey={['distribution_version', 'software_version']}
+            />
+          </div>
+        </Show>
         {/* Repositories */}
         <RepositoriesSection
           repositories={itemInfo()!.repositories}
           class={`border ${Fieldset}`}
           titleClass={`position-absolute px-2 bg-white fw-semibold ${FieldsetTitle}`}
         />
+
         {/* Security audits */}
         <Show when={!isUndefined(itemInfo()!.audits) && !isEmpty(itemInfo()!.audits)}>
           <div class={`position-relative border ${Fieldset}`}>
