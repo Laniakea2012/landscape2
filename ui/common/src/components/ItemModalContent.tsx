@@ -864,7 +864,7 @@ export const ItemModalContent = (props: Props) => {
             </div>
           </div>
         </Show> */}
-        <div class={`pt-2 d-none ${compass}`}>
+        <div class={`pt-2 ${compass}`}>
           <div>Powered by </div>
           <ExternalLink href={'https://oss-compass.org'}>
             {/* <SVGIcon kind={SVGIconKind.OssCompass} class={`me-1 ${compassLogo}`} /> */}
