@@ -833,7 +833,7 @@ export const ItemModalContent = (props: Props) => {
             !isUndefined(itemInfo()!.maturity) && ['incubating', 'graduated'].includes(itemInfo()!.maturity as string)
           }
         >
-          <div class={`position-relative d-none border ${Fieldset}`}>
+          <div class={`position-relative border ${Fieldset}`}>
             <div class={`position-absolute px-2 bg-white fw-semibold ${FieldsetTitle}`}>开源社区评估报告</div>
             <div class="my-2 d-flex justify-content-center w-100 align-items-center">
               <ExternalLink
