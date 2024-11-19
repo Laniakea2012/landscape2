@@ -19,7 +19,7 @@ import { ExternalLink } from './ExternalLink';
 import { FoundationBadge } from './FoundationBadge';
 import { FundingRoundsTable } from './FundingRoundsTable';
 import { Image } from './Image';
-// import { ImageName } from './ImageName';
+import { ImageName } from './ImageName';
 import { ItemDropdown } from './ItemDropdown';
 import { MaturityBadge } from './MaturityBadge';
 import { MaturitySection } from './MaturitySection';
@@ -278,8 +278,8 @@ export const ItemModalContent = (props: Props) => {
       <div class="d-flex flex-column p-3">
         <div class="d-flex flex-row align-items-center">
           <div class={`d-flex align-items-center justify-content-center ${LogoWrapper}`}>
-            <Image class={`m-auto ${Logo}`} logo={itemInfo()!.logo} />
-            {/* <ImageName bigCard={true} name={itemInfo()!.name} class={`m-auto ${Logo}`} logo={itemInfo()!.logo} /> */}
+            {/* <Image class={`m-auto ${Logo}`} logo={itemInfo()!.logo} /> */}
+            <ImageName bigCard={true} name={itemInfo()!.name} class={`m-auto ${Logo}`} logo={itemInfo()!.logo} />
           </div>
 
           <div class={`d-flex flex-column justify-content-between ms-3 ${ItemInfo}`}>
@@ -864,7 +864,7 @@ export const ItemModalContent = (props: Props) => {
             </div>
           </div>
         </Show> */}
-        <div class={`pt-2 d-none ${compass}`}>
+        <div class={`pt-2 ${compass}`}>
           <div>Powered by </div>
           <ExternalLink href={'https://oss-compass.org'}>
             {/* <SVGIcon kind={SVGIconKind.OssCompass} class={`me-1 ${compassLogo}`} /> */}
