@@ -1,4 +1,9 @@
-import { getItemDescription, Image, Loading } from 'common';
+import {
+  getItemDescription,
+  // Image,
+  ImageName,
+  Loading,
+} from 'common';
 import isUndefined from 'lodash/isUndefined';
 import { createEffect, createSignal, on, onCleanup, Show } from 'solid-js';
 
@@ -143,18 +148,18 @@ const GridItem = (props: Props) => {
               class={`btn border-0 w-100 h-100 d-flex flex-row align-items-center ${styles.cardContent}`}
               classList={{ noCursor: !props.activeDropdown && !props.showMoreInfo }}
             >
-              {/* <ImageName
+              <ImageName
                 bigCard={!isUndefined(props.item.featured)}
                 name={props.item.name}
                 class={`m-auto ${styles.logo}`}
                 logo={props.item.logo}
-              /> */}
-              <Image
+              />
+              {/* <Image
                 name={props.item.name}
                 class={`m-auto ${styles.logo}`}
                 logo={props.item.logo}
                 enableLazyLoad={!isUndefined(props.enableLazyLoad) ? props.enableLazyLoad : true}
-              />
+              /> */}
               <Show when={props.item.featured && props.item.featured.label}>
                 <div
                   class={`text-center text-uppercase text-dark position-absolute start-0 end-0 bottom-0 text-truncate px-1 ${styles.legend}`}
@@ -241,18 +246,18 @@ const GridItem = (props: Props) => {
             aria-label={`${props.item.name} info`}
             aria-expanded={visibleDropdown()}
           >
-            <Image
+            {/* <Image
               name={props.item.name}
               class={`m-auto ${styles.logo}`}
               logo={props.item.logo}
               enableLazyLoad={!isUndefined(props.enableLazyLoad) ? props.enableLazyLoad : true}
-            />
-            {/* <ImageName
+            /> */}
+            <ImageName
               bigCard={!isUndefined(props.item.featured)}
               name={props.item.name}
               class={`m-auto ${styles.logo}`}
               logo={props.item.logo}
-            /> */}
+            />
             <Show when={props.item.featured && props.item.featured.label}>
               <div
                 class={`text-center text-uppercase text-dark position-absolute start-0 end-0 bottom-0 text-truncate px-1 ${styles.legend}`}
